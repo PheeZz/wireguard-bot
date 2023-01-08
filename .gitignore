@@ -163,3 +163,4 @@ cython_debug/
 *.xmind
 test.*
 tempCodeRunnerFile.py
+*test.conf

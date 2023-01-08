@@ -56,6 +56,15 @@ def setup(dp):
         text='🆕 Создать конфиг',
         state=None)
 
+    dp.register_message_handler(
+        cmd_show_config,
+        lambda message: message.text.startswith('🔐'),
+        state=None)
+
+    dp.register_message_handler(
+        cmd_support,
+        text='📝 Помощь',)
+
     """moder handlers"""
     dp.register_message_handler(
         cmd_info,

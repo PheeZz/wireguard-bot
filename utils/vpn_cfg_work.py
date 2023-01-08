@@ -7,8 +7,7 @@ import wgconfig.wgexec as wgexec
 class wireguard_config():
     # TODO: move it to config.py or extra module with server_cfg and client_cfg classes
     def __init__(self):
-        # self.cfg_path = getenv('WG_CFG_PATH')
-        self.cfg_path = './utils/config_test.conf'
+        self.cfg_path = getenv('WG_CFG_PATH')
         self.server_ip = getenv('WG_SERVER_IP')
         self.server_port = getenv('WG_SERVER_PORT')
         self.server_public_key = getenv('WG_SERVER_PUBLIC_KEY')
@@ -22,7 +21,7 @@ class wireguard_config():
             with open(self.cfg_path, 'r') as cfg:
                 return cfg.read()
         except Exception as e:
-            logger.error(f'[✗] {e}')
+            logger.error(f'[-] {e}')
 
     def get_last_peer_adress(self) -> str:
         """returns last peer adress from config file
@@ -34,7 +33,7 @@ class wireguard_config():
             # delete 'AllowedIPs = ' and '/32' from string
             return last_peer_adress[13:-3]
         except Exception as e:
-            logger.error(f'[✗] {e}')
+            logger.error(f'[-] {e}')
 
     def add_byte_to_adress(self, username: str) -> str:
         """adds 1 byte to adress
@@ -47,7 +46,7 @@ class wireguard_config():
                 if adress[-3] == '255':
                     adress[-3] = '0'
                     if adress[-4] == '255':
-                        logger.error('[✗] no free ip adresses')
+                        logger.error('[-] no free ip adresses')
                         return
                     else:
                         adress[-4] = str(int(adress[-4]) + 1)
@@ -59,7 +58,7 @@ class wireguard_config():
             adress[-1] = str(int(adress[-1]) + 1)
 
         logger.info(
-            f"[✓] new peer adress is {'.'.join(adress)} for user {username}")
+            f"[+] new peer adress is {'.'.join(adress)} for user {username}")
         return '.'.join(adress)
 
     def add_new_peer(self, username: str, peer_public_key: str) -> NoReturn:
@@ -67,10 +66,10 @@ class wireguard_config():
         try:
             with open(self.cfg_path, 'a') as cfg:
                 cfg.write(
-                    f'# {username}\n[Peer]\nPublicKey = {peer_public_key}\nAllowedIPs = {self.add_byte_to_adress(username)}/32\n\n')
-
+                    f'#{username}\n[Peer]\nPublicKey = {peer_public_key}\nAllowedIPs = {self.add_byte_to_adress(username)}/32\n\n')
+                logger.info(f'[+] new peer {username} added')
         except Exception as e:
-            logger.error(f'[✗] {e}')
+            logger.error(f'[-] {e}')
 
         else:
             # update config and last_peer_adress variables after adding new peer
@@ -84,7 +83,7 @@ class wireguard_config():
             private_key, public_key = wgexec.generate_keypair()
             return private_key, public_key
         except Exception as e:
-            logger.error(f'[✗] {e}')
+            logger.error(f'[-] {e}')
 
     def get_peer_adress(self, username: str) -> str:
         """returns peer adress by username
@@ -96,9 +95,11 @@ class wireguard_config():
                         if line.startswith('AllowedIPs'):
                             peer_adress = line
                     # delete 'AllowedIPs = ' from string
+                    logger.info(
+                        f"[+] peer adress for user {username} is {peer_adress[13:]}")
                     return peer_adress[13:]
         except Exception as e:
-            logger.error(f'[✗] {e}')
+            logger.error(f'[-] {e}')
 
     def create_peer_config(self, peer_private_key: str, username: str) -> str:
         """creates config for client and returns it as string
@@ -117,16 +118,20 @@ PersistentKeepalive = 20
 '''
 
     def update_server_config(self, username: str, device: str) -> str:
-        user_pub_key, user_priv_key = self.generate_keys()
+        user_priv_key, user_pub_key = self.generate_keys()
         self.add_new_peer(f'{username}_{device}', user_pub_key)
+        # restart wg-quick
+        try:
+            exec('sudo systemctl restart wg-quick@wg0.service')
+        except Exception as e:
+            logger.error(f'[-] {e}')
+        else:
+            logger.success('[+] wg-quick restarted successfully')
+
         return self.create_peer_config(user_priv_key, f'{username}_{device}')
 
 
 if __name__ == '__main__':
     server_config = wireguard_config()
-    # print(server_config.last_peer_adress)
-    # server_config.add_new_peer(username='QA_engeneer', peer_public_key='test')
-    # print(server_config.last_peer_adress)
-    # print(server_config.get_peer_adress(username='QA_engeneer'))
     print(server_config.create_peer_config(
         peer_private_key='test', username='QA_engeneer'))

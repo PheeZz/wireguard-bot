@@ -7,8 +7,8 @@ async def set_commands(dp):
     await dp.bot.set_my_commands(
         commands=[
             types.BotCommand(
-                command='/menu',
-                description='menu'),
+                command='/start',
+                description='start bot'),
         ])
 
 

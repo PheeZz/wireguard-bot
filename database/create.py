@@ -4,15 +4,6 @@ from loguru import logger
 from data.config import db_connection_parameters as params
 
 
-# params = {
-#     'database': 'wireguard_bot',
-#     'user': 'postgres',
-#     'password': 'postgres',
-#     'host': 'localhost',
-#     'port': '5432',
-# }
-
-
 def create_table_user() -> NoReturn:
     """ Create table user in database wireguard_bot"""
     try:
@@ -31,9 +22,9 @@ def create_table_user() -> NoReturn:
                 """
             )
             conn.commit()
-            logger.success("[✓] Table user created successfully")
+            logger.success("[+] Table user created successfully")
     except (Exception, pg.DatabaseError) as error:
-        logger.error(f'[✗] {error}')
+        logger.error(f'[-] {error}')
 
 
 def create_table_payment() -> NoReturn:
@@ -54,9 +45,9 @@ def create_table_payment() -> NoReturn:
                 """
             )
             conn.commit()
-            logger.success("[✓] Table payment created successfully")
+            logger.success("[+] Table payment created successfully")
     except (Exception, pg.DatabaseError) as error:
-        logger.error(f'[✗] {error}')
+        logger.error(f'[-] {error}')
 
 
 def create_table_vpn_config() -> NoReturn:
@@ -76,9 +67,9 @@ def create_table_vpn_config() -> NoReturn:
                 """
             )
             conn.commit()
-            logger.success("[✓] Table vpn_config created successfully")
+            logger.success("[+] Table vpn_config created successfully")
     except (Exception, pg.DatabaseError) as error:
-        logger.error(f'[✗] {error}')
+        logger.error(f'[-] {error}')
 
 
 if __name__ == "__main__":

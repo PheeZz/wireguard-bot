@@ -9,11 +9,11 @@ PAYMENTS_TOKEN = os.getenv('PAYMENTS_TOKEN')
 ADMINS = os.getenv('ADMINS_IDS')
 
 db_connection_parameters = {
-    'database': 'wireguard_bot',
-    'user': 'postgres',
-    'password': 'postgres',
-    'host': 'localhost',
-    'port': '5432',
+    'host': os.getenv('DB_HOST'),
+    'port': os.getenv('DB_PORT'),
+    'user': os.getenv('DB_USER'),
+    'password': os.getenv('DB_USER_PASSWORD'),
+    'database': os.getenv('DATABASE'),
 }
 
 vpn_config = wireguard_config()

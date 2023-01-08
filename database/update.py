@@ -17,5 +17,5 @@ def update_user_payment(user_id: int) -> None:
 
             conn.commit()
     except (Exception, pg.DatabaseError) as error:
-        logger.error(f'[✗] {error}')
+        logger.error(f'[-] {error}')
         return None

@@ -1,4 +1,5 @@
 from loguru import logger
+from os import remove
 
 from aiogram import types
 from aiogram.dispatcher import FSMContext
@@ -62,6 +63,7 @@ async def cmd_menu(message: types.Message):
     await message.answer('Возвращаю тебя в основное меню', reply_markup=await kb.payed_user_kb())
 
 
+@rate_limit(limit=5)
 async def create_new_config(message: types.Message, state=FSMContext):
     await message.answer('Для какого устройства ты хочешь создать конфиг?', reply_markup=await kb.device_kb(message.from_user.id))
     await New_config.device.set()
@@ -100,9 +102,9 @@ async def device_selected(call: types.CallbackQuery, state=FSMContext):
 
     # delete temp files
     try:
-        os.remove(f'data/temp/TURKEY_{call.from_user.username}.conf')
+        remove(f'data/temp/TURKEY_{call.from_user.username}.conf')
         if device == "PHONE":
-            os.remove(f'data/temp/TURKEY_{call.from_user.username}.png')
+            remove(f'data/temp/TURKEY_{call.from_user.username}.png')
     except OSError as error:
         logger.error(
             f'Error while deleting temp files for user {call.from_user.username}; Error: {error}')
@@ -111,3 +113,64 @@ async def device_selected(call: types.CallbackQuery, state=FSMContext):
 async def cancel_config_creation(call: types.CallbackQuery, state=FSMContext):
     await state.finish()
     await call.message.edit_text('Отмена создания конфига', reply_markup=None)
+
+
+@rate_limit(limit=5)
+async def cmd_show_config(message: types.Message, state=FSMContext):
+    if message.text.lower().endswith('пк'):
+        device = 'PC'
+    elif message.text.lower().endswith('смартфон'):
+        device = 'PHONE'
+
+    config = database.selector.get_user_config(
+        user_id=message.from_user.id, config_name=f'{message.from_user.username}_{device}')
+
+    if device == 'PC':
+        with open(f'data/temp/TURKEY_{message.from_user.username}_{device}.conf', 'w') as f:
+            f.write(config)
+
+        # send config file
+        await message.answer_document(types.InputFile(f'data/temp/TURKEY_{message.from_user.username}_{device}.conf'),)
+
+        # delete temp files
+        try:
+            remove(
+                f'data/temp/TURKEY_{message.from_user.username}_{device}.conf')
+        except OSError as error:
+            logger.error(
+                f'Error while deleting temp files for user {message.from_user.username}; Error: {error}')
+
+    elif device == 'PHONE':
+        with open(f'data/temp/TURKEY_{message.from_user.username}_{device}.conf', 'w') as f:
+            f.write(config)
+
+        # send config file
+        await message.answer_document(types.InputFile(f'data/temp/TURKEY_{message.from_user.username}_{device}.conf'),)
+
+        # send qr code (create qr code from config by qrencode)
+        exec(
+            f'qrencode -o data/temp/TURKEY_{message.from_user.username}.png -s 10 -l H -m 2 -t PNG "data/temp/TURKEY_{message.from_user.username}_{device}.conf"')
+        await message.answer_photo(types.InputFile(f'data/temp/TURKEY_{message.from_user.username}.png'),)
+
+        # delete temp files
+        try:
+            remove(
+                f'data/temp/TURKEY_{message.from_user.username}_{device}.conf')
+            remove(f'data/temp/TURKEY_{message.from_user.username}.png')
+        except OSError as error:
+            logger.error(
+                f'Error while deleting temp files for user {message.from_user.username}; Error: {error}')
+
+
+@rate_limit(limit=5)
+async def cmd_support(message: types.Message):
+    # send telegraph page with support info (link: https://telegra.ph/FAQ-po-botu-01-08)
+    # place link inside 'странице'and parse it in markdown
+    await message.answer(
+        'Подробное описание бота и его функционала доступно на [странице](https://telegra.ph/FAQ-po-botu-01-08)',
+        parse_mode='Markdown',
+    )
+
+    # answer with username info @pheezz as markdown
+    await message.answer(
+        'Если у тебя все еще остались вопросы, то ты можешь написать [мне](t.me/pheezz) лично', parse_mode='Markdown')

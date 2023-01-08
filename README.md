@@ -59,4 +59,10 @@ WG_SERVER_PRESHARED_KEY= <str>
 WG_CFG_PATH = <str>
 PAYMENTS_TOKEN = <str>
 ADMINS_IDS = <list>
+
+DATABASE = <str>
+DB_USER = <str>
+DB_USER_PASSWORD = <str>
+DB_HOST = <str>
+DB_PORT = <str>
 ```

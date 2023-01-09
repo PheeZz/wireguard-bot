@@ -36,7 +36,8 @@ async def cmd_pay(message: types.Message) -> types.Message:
     # send invoice
     await bot.send_invoice(message.from_user.id, title='Подписка на VPN', description='Активация VPN на 30 дней',
                            provider_token=PAYMENTS_TOKEN, currency='RUB', prices=[types.LabeledPrice(label='Подписка на VPN', amount=100*100)],
-                           start_parameter='pay', payload='pay')
+                           start_parameter='pay', payload='pay', photo_url='https://i.postimg.cc/sDqvTnj6/month.png',
+                           photo_size=256, photo_width=256, photo_height=256,)
 
 
 # pre checkout query

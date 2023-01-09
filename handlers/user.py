@@ -9,7 +9,8 @@ import keyboards as kb
 
 import database
 from loader import bot
-from data.config import PAYMENTS_TOKEN, vpn_config
+from data.config import PAYMENTS_TOKEN
+from loader import vpn_config
 
 from utils.fsm import New_config
 
@@ -33,7 +34,6 @@ async def cmd_start(message: types.Message) -> types.Message:
 @rate_limit(limit=5)
 async def cmd_pay(message: types.Message) -> types.Message:
     # send invoice
-    await message.answer('Оплата подписки',)
     await bot.send_invoice(message.from_user.id, title='Подписка на VPN', description='Активация VPN на 30 дней',
                            provider_token=PAYMENTS_TOKEN, currency='RUB', prices=[types.LabeledPrice(label='Подписка на VPN', amount=100*100)],
                            start_parameter='pay', payload='pay')
@@ -46,10 +46,18 @@ async def pre_checkout_query_handler(query: types.PreCheckoutQuery):
 
 # successful payment
 async def successful_payment_handler(message: types.Message):
-    await message.answer('Спасибо за покупку!', reply_markup=await kb.payed_user_kb())
 
     database.update_user_payment(message.from_user.id)
     database.insert_new_payment(message)
+    if database.selector.is_user_have_config(message.from_user.id):
+        try:
+            vpn_config.reconnect_payed_user(message.from_user.id)
+        except Exception as e:
+            logger.error(e)
+
+    await message.answer(
+        f'{message.from_user.full_name or message.from_user.username}, твой доступ к VPN продлен до {database.selector.get_subscription_end_date(message.from_user.id)}',
+        reply_markup=await kb.payed_user_kb())
 
 
 async def cmd_my_configs(message: types.Message):
@@ -60,7 +68,10 @@ async def cmd_my_configs(message: types.Message):
 
 
 async def cmd_menu(message: types.Message):
-    await message.answer('Возвращаю тебя в основное меню', reply_markup=await kb.payed_user_kb())
+    if database.selector.is_subscription_end(message.from_user.id):
+        await message.answer('Возвращаю тебя в основное меню', reply_markup=await kb.free_user_kb(message.from_user.id))
+    else:
+        await message.answer('Возвращаю тебя в основное меню', reply_markup=await kb.payed_user_kb())
 
 
 @rate_limit(limit=5)
@@ -78,6 +89,9 @@ async def device_selected(call: types.CallbackQuery, state=FSMContext):
     device = "💻 ПК" if call.data.startswith("pc") else "📱 Смартфон"
     await call.message.edit_text(f'Ты выбрал {device}, приступаю к созданию конфига', reply_markup=None)
     await state.finish()
+
+    # add +1 to user config count
+    database.update_user_config_count(call.from_user.id)
 
     device = "PC" if call.data.startswith("pc") else "PHONE"
     user_config = vpn_config.update_server_config(username=call.from_user.username,
@@ -174,3 +188,16 @@ async def cmd_support(message: types.Message):
     # answer with username info @pheezz as markdown
     await message.answer(
         'Если у тебя все еще остались вопросы, то ты можешь написать [мне](t.me/pheezz) лично', parse_mode='Markdown')
+
+
+@rate_limit(limit=5)
+async def cmd_show_end_time(message: types.Message):
+    # show user end time
+    await message.answer(
+        f'{message.from_user.full_name or message.from_user.username}, твой доступ к VPN закончится {database.selector.get_subscription_end_date(message.from_user.id)}')
+
+
+@rate_limit(limit=2)
+async def cmd_show_subscription(message: types.Message):
+    await message.answer(
+        f'{message.from_user.full_name or message.from_user.username}, здесь ты можешь распорядиться своей подпиской', reply_markup=await kb.subscription_management_kb())

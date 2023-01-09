@@ -17,6 +17,7 @@ async def on_startup(dp):
     import middlewares
     from loguru import logger
     import time
+    from utils.Watchdog import Watchdog
 
     middlewares.setup(dp)
     await set_commands(dp)
@@ -24,6 +25,10 @@ async def on_startup(dp):
 
     logger.add(f'logs/{time.strftime("%Y-%m-%d__%H-%M")}.log',
                level='DEBUG', rotation='500 MB', compression='zip')
+
+    daemon = Watchdog()
+    daemon.run()
+    logger.success('[+] Bot started successfully')
 
 if __name__ == "__main__":
     # Launch

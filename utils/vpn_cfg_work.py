@@ -2,6 +2,7 @@ from loguru import logger
 from os import getenv
 from typing import NoReturn
 import wgconfig.wgexec as wgexec
+import database
 
 
 class wireguard_config():
@@ -118,6 +119,15 @@ PersistentKeepalive = 20
 '''
 
     def update_server_config(self, username: str, device: str) -> str:
+        """adds new peer to config file and restarts wg-quick
+
+        Args:
+            username (str): username of new peer
+            device (str): device of new peer
+
+        Returns:
+            str: config for new peer
+        """
         user_priv_key, user_pub_key = self.generate_keys()
         self.add_new_peer(f'{username}_{device}', user_pub_key)
         # restart wg-quick
@@ -130,8 +140,83 @@ PersistentKeepalive = 20
 
         return self.create_peer_config(user_priv_key, f'{username}_{device}')
 
+    def disconnect_peer(self, user_id: int):
+        """disconnects peer by username
+        actually, it just comments all 3 lines under this username
+        """
+        username = database.selector.get_username_by_id(user_id)
 
-if __name__ == '__main__':
-    server_config = wireguard_config()
-    print(server_config.create_peer_config(
-        peer_private_key='test', username='QA_engeneer'))
+        try:
+            with open(self.cfg_path, 'r') as cfg:
+                config = cfg.read()
+                for line in config.splitlines():
+                    if line.startswith(f'#{username}'):
+                        config = config.replace(
+                            f'{line}\n', f'#DISCONNECTED_{line[1:]}\n')
+
+            with open(self.cfg_path, 'w') as cfg:
+                cfg.write(config)
+
+            # comment 3 lines under username such as: Peer, PublicKey, AllowedIPs
+            with open(self.cfg_path, 'r') as cfg:
+                config = cfg.read()
+                config_as_list = config.splitlines()
+                for line in config_as_list:
+                    if line.startswith(f'#DISCONNECTED_{username}'):
+                        # get index of line with username
+                        line_index = config.splitlines().index(line)
+                        # check if next line is #[Peer] then not comment it and next 2 lines twice or more
+                        if not config_as_list[line_index + 1].startswith('#[Peer]'):
+                            for _ in range(3):
+                                line_index += 1
+                                config_as_list[line_index] = f'#{config_as_list[line_index]}'
+
+                config = ''.join([f'{line}\n' for line in config_as_list])
+
+            with open(self.cfg_path, 'w') as cfg:
+                cfg.write(config)
+                # restart wg-quick
+                exec('sudo systemctl restart wg-quick@wg0.service')
+                logger.info(f'[+] peer {username} disconnected')
+
+        except Exception as e:
+            logger.error(f'[-] {e}')
+
+    def reconnect_payed_user(self, user_id: int):
+        """reconnects payed user by user_id
+        """
+        username = database.selector.get_username_by_id(user_id)
+
+        try:
+            with open(self.cfg_path, 'r') as cfg:
+                config = cfg.read()
+                for line in config.splitlines():
+                    if line.startswith(f'#DISCONNECTED_{username}'):
+                        config = config.replace(
+                            f'{line}\n', f'#{line[14:]}\n')
+
+            with open(self.cfg_path, 'w') as cfg:
+                cfg.write(config)
+
+            with open(self.cfg_path, 'r') as cfg:
+                config = cfg.read()
+                config_as_list = config.splitlines()
+                for line in config_as_list:
+                    if line.startswith(f'#{username}'):
+                        # get index of line with username
+                        line_index = config.splitlines().index(line)
+                        if config_as_list[line_index + 1].startswith('#[Peer]'):
+                            for _ in range(3):
+                                line_index += 1
+                                config_as_list[line_index] = config_as_list[line_index][1:]
+
+                config = ''.join([f'{line}\n' for line in config_as_list])
+
+            with open(self.cfg_path, 'w') as cfg:
+                cfg.write(config)
+                # restart wg-quick
+                exec('sudo systemctl restart wg-quick@wg0.service')
+                logger.info(f'[+] peer {username} reconnected')
+
+        except Exception as e:
+            logger.error(f'[-] {e}')

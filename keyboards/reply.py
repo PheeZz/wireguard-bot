@@ -5,7 +5,7 @@ from database.selector import is_user_have_config, all_user_configs
 async def payed_user_kb():
     keyboard = ReplyKeyboardMarkup(row_width=2, resize_keyboard=True)
     keyboard.insert(KeyboardButton('📁 Мои конфиги'))
-    keyboard.insert(KeyboardButton('📅 Дата отключения'))
+    keyboard.insert(KeyboardButton('🕑 Моя подписка'))
     keyboard.insert(KeyboardButton('📝 Помощь'))
     return keyboard
 
@@ -33,3 +33,11 @@ async def configs_kb(user_id: int):
     configs_kb.insert(KeyboardButton('🔙 Назад'))
 
     return configs_kb
+
+
+async def subscription_management_kb():
+    keyboard = ReplyKeyboardMarkup(row_width=2, resize_keyboard=True)
+    keyboard.insert(KeyboardButton('📅 Дата отключения'))
+    keyboard.insert(KeyboardButton('💵 Продлить'))
+    keyboard.insert(KeyboardButton('🔙 Назад'))
+    return keyboard

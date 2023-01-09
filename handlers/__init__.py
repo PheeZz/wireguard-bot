@@ -22,7 +22,7 @@ def setup(dp):
 
     dp.register_message_handler(
         cmd_pay,
-        text='💵 Оплатить',
+        lambda message: message.text.startswith('💵'),
         state=None)
 
     dp.register_pre_checkout_query_handler(
@@ -65,8 +65,26 @@ def setup(dp):
         cmd_support,
         text='📝 Помощь',)
 
+    dp.register_message_handler(
+        cmd_show_end_time,
+        text='📅 Дата отключения',)
+
+    dp.register_message_handler(
+        cmd_show_subscription,
+        text='🕑 Моя подписка',)
+
     """moder handlers"""
     dp.register_message_handler(
         cmd_info,
         commands=["info"],
+        state=None)
+
+    dp.register_message_handler(
+        statistic_endtime,
+        commands=["stats"],
+        state=None)
+
+    dp.register_message_handler(
+        give_subscription_time,
+        commands=["give"],
         state=None)

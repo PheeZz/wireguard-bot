@@ -107,7 +107,7 @@ class wireguard_config():
         """
         return f'''[Interface]
 PrivateKey = {peer_private_key}
-Address = {self.get_peer_adress(username)}
+Address = {self.last_peer_adress}
 DNS = 8.8.8.8
 
 [Peer]

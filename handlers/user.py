@@ -13,6 +13,7 @@ from data.config import PAYMENTS_TOKEN
 from loader import vpn_config
 
 from utils.fsm import New_config
+import os
 
 
 @rate_limit(limit=5)
@@ -111,8 +112,8 @@ async def device_selected(call: types.CallbackQuery, state=FSMContext):
 
     if device == "PHONE":
         # send qr code (create qr code from config by qrencode)
-        exec(
-            f'qrencode -o data/temp/TURKEY_{call.from_user.username}.png -s 10 -l H -m 2 -t PNG "data/temp/TURKEY_{call.from_user.username}.conf"')
+        os.system(f'qrencode -o data/temp/TURKEY_{call.from_user.username}.png -s 10 -l H -m 2 '
+                  f'data/temp/TURKEY_{call.from_user.username}.conf')
         await call.message.answer_photo(types.InputFile(f'data/temp/TURKEY_{call.from_user.username}.png'),)
 
     # delete temp files
@@ -163,8 +164,8 @@ async def cmd_show_config(message: types.Message, state=FSMContext):
         await message.answer_document(types.InputFile(f'data/temp/TURKEY_{message.from_user.username}_{device}.conf'),)
 
         # send qr code (create qr code from config by qrencode)
-        exec(
-            f'qrencode -o data/temp/TURKEY_{message.from_user.username}.png -s 10 -l H -m 2 -t PNG "data/temp/TURKEY_{message.from_user.username}_{device}.conf"')
+        os.system(f'qrencode -o data/temp/TURKEY_{message.from_user.username}.png -s 10 -l H -m 2 '
+                  f'data/temp/TURKEY_{message.from_user.username}_{device}.conf')
         await message.answer_photo(types.InputFile(f'data/temp/TURKEY_{message.from_user.username}.png'),)
 
         # delete temp files

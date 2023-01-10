@@ -3,6 +3,7 @@ from os import getenv
 from typing import NoReturn
 import wgconfig.wgexec as wgexec
 import database
+import subprocess
 
 
 class wireguard_config():
@@ -16,6 +17,14 @@ class wireguard_config():
 
         self.config = self.get_config()
         self.last_peer_adress = self.get_last_peer_adress()
+
+    def restart_service(self) -> NoReturn:
+        try:
+            subprocess.run(
+                ['sudo', 'systemctl', 'restart', 'wg-quick@wg0.service'])
+            logger.success('[+] wireguard service restarted')
+        except Exception as e:
+            logger.error(f'[-] {e}')
 
     def get_config(self) -> str:
         try:
@@ -77,15 +86,6 @@ class wireguard_config():
             self.config = self.get_config()
             self.last_peer_adress = self.get_last_peer_adress()
 
-    def generate_keys(self) -> tuple[str, str]:
-        """generates private and public keys
-        """
-        try:
-            private_key, public_key = wgexec.generate_keypair()
-            return private_key, public_key
-        except Exception as e:
-            logger.error(f'[-] {e}')
-
     def get_peer_adress(self, username: str) -> str:
         """returns peer adress by username
         """
@@ -128,15 +128,11 @@ PersistentKeepalive = 20
         Returns:
             str: config for new peer
         """
-        user_priv_key, user_pub_key = self.generate_keys()
+        user_priv_key, user_pub_key = wgexec.generate_keypair()
+
         self.add_new_peer(f'{username}_{device}', user_pub_key)
         # restart wg-quick
-        try:
-            exec('sudo systemctl restart wg-quick@wg0.service')
-        except Exception as e:
-            logger.error(f'[-] {e}')
-        else:
-            logger.success('[+] wg-quick restarted successfully')
+        self.restart_service()
 
         return self.create_peer_config(user_priv_key, f'{username}_{device}')
 
@@ -176,7 +172,7 @@ PersistentKeepalive = 20
             with open(self.cfg_path, 'w') as cfg:
                 cfg.write(config)
                 # restart wg-quick
-                exec('sudo systemctl restart wg-quick@wg0.service')
+                self.restart_service()
                 logger.info(f'[+] peer {username} disconnected')
 
         except Exception as e:
@@ -215,7 +211,7 @@ PersistentKeepalive = 20
             with open(self.cfg_path, 'w') as cfg:
                 cfg.write(config)
                 # restart wg-quick
-                exec('sudo systemctl restart wg-quick@wg0.service')
+                self.restart_service()
                 logger.info(f'[+] peer {username} reconnected')
 
         except Exception as e:

@@ -113,7 +113,7 @@ async def device_selected(call: types.CallbackQuery, state=FSMContext):
     if device == "PHONE":
         # send qr code (create qr code from config by qrencode)
         os.system(f'qrencode -o data/temp/TURKEY_{call.from_user.username}.png -s 10 -l H -m 2 '
-                  f'data/temp/TURKEY_{call.from_user.username}.conf')
+                  f'< data/temp/TURKEY_{call.from_user.username}.conf')
         await call.message.answer_photo(types.InputFile(f'data/temp/TURKEY_{call.from_user.username}.png'),)
 
     # delete temp files

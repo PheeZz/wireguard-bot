@@ -9,7 +9,7 @@ import keyboards as kb
 
 import database
 from loader import bot
-from data.config import PAYMENTS_TOKEN
+from data.config import PAYMENTS_TOKEN, ADMINS
 from loader import vpn_config
 
 from utils.fsm import New_config
@@ -31,13 +31,19 @@ async def cmd_start(message: types.Message) -> types.Message:
                         reply_markup=await kb.free_user_kb(message.from_user.id))
     database.insert_new_user(message)
 
+    # notify admin about new user
+    for ADMIN in ADMINS:
+        # format: Новый пользователь: Имя (id: id), username, id like code format in markdown
+        await bot.send_message(ADMIN, f'Новый пользователь: {message.from_user.full_name} (id: `{message.from_user.id}`), `{message.from_user.username}`',
+                               parse_mode='markdown')
+
 
 @rate_limit(limit=5)
 async def cmd_pay(message: types.Message) -> types.Message:
     # send invoice
     await bot.send_invoice(message.from_user.id, title='Подписка на VPN', description='Активация VPN на 30 дней',
                            provider_token=PAYMENTS_TOKEN, currency='RUB', prices=[types.LabeledPrice(label='Подписка на VPN', amount=100*100)],
-                           start_parameter='pay', payload='30days_subscription', photo_url='https://i.postimg.cc/sDqvTnj6/month.png',
+                           start_parameter='30days_subscription', payload='30days_subscription', photo_url='https://i.postimg.cc/sDqvTnj6/month.png',
                            photo_size=256, photo_width=256, photo_height=256,)
 
 
@@ -108,7 +114,8 @@ async def device_selected(call: types.CallbackQuery, state=FSMContext):
         f.write(user_config)
 
     # send config file
-    await call.message.answer_document(types.InputFile(f'data/temp/TURKEY_{call.from_user.username}.conf'),)
+    await call.message.answer_document(types.InputFile(f'data/temp/TURKEY_{call.from_user.username}.conf'),
+                                       reply_markup=await kb.configs_kb(call.from_user.id))
 
     if device == "PHONE":
         # send qr code (create qr code from config by qrencode)
@@ -199,8 +206,7 @@ async def cmd_show_end_time(message: types.Message):
     # show user end time
     await message.answer(
         f'''{message.from_user.full_name or message.from_user.username},
-твой доступ к VPN закончится
-        {database.selector.get_subscription_end_date(message.from_user.id)}''')
+твой доступ к VPN закончится {database.selector.get_subscription_end_date(message.from_user.id)}''')
 
 
 @rate_limit(limit=2)

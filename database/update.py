@@ -32,7 +32,7 @@ def update_user_payment(user_id: int) -> NoReturn:
             username = cursor.fetchone()[0]
 
             logger.info(
-                f'[+] user {user_id}::{username} payment updated [BY ADMIN]; added: 30 days')
+                f'[+] user {user_id}::{username} payment updated; added: 30 days')
     except (Exception, pg.DatabaseError) as error:
         logger.error(f'[-] {error}')
         return None

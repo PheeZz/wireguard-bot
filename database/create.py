@@ -5,7 +5,9 @@ from data.config import db_connection_parameters as params
 
 
 def create_table_user() -> NoReturn:
-    """ Create table user in database wireguard_bot"""
+    """ Create table user in database wireguard_bot
+    Default value for subscription_end_date is 999 days ago
+    """
     try:
         conn = pg.connect(**params)
         with conn.cursor() as cursor:
@@ -17,8 +19,8 @@ def create_table_user() -> NoReturn:
                 username VARCHAR(255) UNIQUE,
                 is_admin BOOLEAN DEFAULT FALSE,
                 is_banned BOOLEAN DEFAULT FALSE,
-                subscription_end_date TIMESTAMP,
-                config_count INT DEFAULT 0)
+                subscription_end_date TIMESTAMP DEFAULT now() - interval '999 days',
+                config_count INT DEFAULT 0);
                 """
             )
             conn.commit()

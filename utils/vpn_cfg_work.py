@@ -1,7 +1,6 @@
 from loguru import logger
 from os import getenv
 from typing import NoReturn
-import wgconfig.wgexec as wgexec
 import database
 import subprocess
 
@@ -18,7 +17,59 @@ class wireguard_config():
         self.config = self.get_config()
         self.last_peer_adress = self.get_last_peer_adress()
 
+    def generate_private_key(self, username: str, save: bool = True) -> str:
+        """Generate wireguard peer PRIVATE key
+
+        Returns:
+            str: peer private key
+        """
+        try:
+            private_key = subprocess.run(
+                ['wg', 'genkey'], stdout=subprocess.PIPE).stdout.decode('utf-8')
+            logger.success('[+] private key generated')
+
+            if save:
+                # TODO maybe better save private key to database?
+                logger.info(
+                    f'[+] private key "{private_key}" for user {username} saved to database')
+
+            return private_key
+        except Exception as e:
+            logger.error(f'[-] {e}')
+
+    def generate_public_key(self, public_key: str, username: str, save: bool = True) -> str:
+        """Generate wireguard peer PUBLIC key
+
+        Args:
+            public_key (str): peer private key,
+            can be generated with self.generate_private_key()
+
+        Returns:
+            str: peer PUBLIC key
+        """
+        try:
+            public_key = subprocess.run(
+                ['wg', 'pubkey'], input=public_key,
+                stdout=subprocess.PIPE).stdout.decode('utf-8')
+            logger.success('[+] public key generated')
+
+            if save:
+                # TODO maybe better save public key to database?
+                logger.info(
+                    f'[+] public key "{public_key}" for user {username} saved to database')
+
+            return public_key
+        except Exception as e:
+            logger.error(f'[-] {e}')
+
+    def generate_key_pair(self, username: str) -> tuple:
+        private_key = self.generate_private_key(username=username)
+        public_key = self.generate_public_key(private_key, username=username)
+        return private_key, public_key
+
     def restart_service(self) -> NoReturn:
+        """restart wireguard service
+        """
         try:
             subprocess.run(
                 ['sudo', 'systemctl', 'restart', 'wg-quick@wg0.service'])
@@ -76,7 +127,8 @@ class wireguard_config():
         try:
             with open(self.cfg_path, 'a') as cfg:
                 cfg.write(
-                    f'#{username}\n[Peer]\nPublicKey = {peer_public_key}\nAllowedIPs = {self.add_byte_to_adress(username)}/32\n\n')
+                    f'#{username}\n[Peer]\nPublicKey = {peer_public_key}\n\
+AllowedIPs = {self.add_byte_to_adress(username)}/32\n\n')
                 logger.info(f'[+] new peer {username} added')
         except Exception as e:
             logger.error(f'[-] {e}')
@@ -115,8 +167,7 @@ PublicKey = {self.server_public_key}
 PresharedKey = {self.server_preshared_key}
 AllowedIPs = 0.0.0.0/0
 Endpoint = {self.server_ip}:{self.server_port}
-PersistentKeepalive = 20
-'''
+PersistentKeepalive = 20'''
 
     def update_server_config(self, username: str, device: str) -> str:
         """adds new peer to config file and restarts wg-quick
@@ -128,7 +179,7 @@ PersistentKeepalive = 20
         Returns:
             str: config for new peer
         """
-        user_priv_key, user_pub_key = wgexec.generate_keypair()
+        user_priv_key, user_pub_key = self.generate_key_pair(username=username)
 
         self.add_new_peer(f'{username}_{device}', user_pub_key)
         # restart wg-quick
@@ -161,7 +212,8 @@ PersistentKeepalive = 20
                     if line.startswith(f'#DISCONNECTED_{username}'):
                         # get index of line with username
                         line_index = config.splitlines().index(line)
-                        # check if next line is #[Peer] then not comment it and next 2 lines twice or more
+                        # check if next line is #[Peer] then not comment it and
+                        # next 2 lines twice or more
                         if not config_as_list[line_index + 1].startswith('#[Peer]'):
                             for _ in range(3):
                                 line_index += 1

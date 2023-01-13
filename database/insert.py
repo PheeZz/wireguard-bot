@@ -34,7 +34,8 @@ def insert_new_payment(message: Message) -> NoReturn:
                 """--sql
                 INSERT INTO payment(user_id, date, amount)
                 VALUES (%s, %s, %s)
-                """, (message.from_user.id, datetime.now(), message.successful_payment.total_amount)
+                """, (message.from_user.id, datetime.now(),
+                      message.successful_payment.total_amount)
             )
             conn.commit()
             logger.success(

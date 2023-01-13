@@ -15,8 +15,12 @@ def update_user_payment(user_id: int) -> NoReturn:
         with conn.cursor() as cursor:
             cursor.execute(
                 """--sql
-                UPDATE users SET subscription_end_date = CASE WHEN subscription_end_date < %s THEN %s + %s ELSE subscription_end_date + %s END WHERE user_id = %s
-                """, (datetime.now(), datetime.now(), timedelta(days=30), timedelta(days=30), user_id))
+                UPDATE users SET subscription_end_date = CASE
+                WHEN subscription_end_date < %s THEN %s + %s
+                ELSE subscription_end_date + %s END
+                WHERE user_id = %s
+                """, (datetime.now(), datetime.now(),
+                      timedelta(days=30), timedelta(days=30), user_id))
 
             conn.commit()
 
@@ -61,7 +65,9 @@ def update_given_subscription_time(user_id: int, days: int) -> NoReturn:
         with conn.cursor() as cursor:
             cursor.execute(
                 """--sql
-                UPDATE users SET subscription_end_date = subscription_end_date + %s WHERE user_id = %s
+                UPDATE users
+                SET subscription_end_date = subscription_end_date + %s
+                WHERE user_id = %s
                 """, (timedelta(days=days), user_id))
 
             conn.commit()
@@ -101,7 +107,8 @@ def set_user_enddate_to_N(user_id: int, days: int) -> NoReturn:
             username = cursor.fetchone()[0]
 
             logger.info(
-                f'[+] user {user_id}::{username} payment updated [BY ADMIN]; set to: {datetime.now() + timedelta(days=days)}')
+                f'''[+] user {user_id}::{username} payment updated [BY ADMIN]; set to:
+                {datetime.now() + timedelta(days=days)}''')
     except (Exception, pg.DatabaseError) as error:
         logger.error(f'[-] {error}')
         return None

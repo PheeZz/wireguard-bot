@@ -139,7 +139,8 @@ async def cmd_show_config(message: types.Message, state=FSMContext):
         device = 'PHONE'
 
     config = database.selector.get_user_config(
-        user_id=message.from_user.id, config_name=f'{message.from_user.username}_{device}')
+        user_id=message.from_user.id,
+        config_name=f'{message.from_user.username}_{device}')
 
     if device == 'PC':
         with open(f'data/temp/TURKEY_{message.from_user.username}_{device}.conf', 'w') as f:
@@ -164,8 +165,8 @@ async def cmd_show_config(message: types.Message, state=FSMContext):
         await message.answer_document(types.InputFile(f'data/temp/TURKEY_{message.from_user.username}_{device}.conf'),)
 
         # send qr code (create qr code from config by qrencode)
-        os.system(f'qrencode -o data/temp/TURKEY_{message.from_user.username}.png -s 10 -l H -m 2 '
-                  f'data/temp/TURKEY_{message.from_user.username}_{device}.conf')
+        os.system(f'qrencode -o data/temp/TURKEY_{message.from_user.username}.png -s 10 -l H -m 2'
+                  f'< data/temp/TURKEY_{message.from_user.username}_{device}.conf')
         await message.answer_photo(types.InputFile(f'data/temp/TURKEY_{message.from_user.username}.png'),)
 
         # delete temp files
@@ -189,17 +190,22 @@ async def cmd_support(message: types.Message):
 
     # answer with username info @pheezz as markdown
     await message.answer(
-        'Если у тебя все еще остались вопросы, то ты можешь написать [мне](t.me/pheezz) лично', parse_mode='Markdown')
+        'Если у тебя все еще остались вопросы, то ты можешь написать [мне](t.me/pheezz) лично',
+        parse_mode='Markdown')
 
 
 @rate_limit(limit=5)
 async def cmd_show_end_time(message: types.Message):
     # show user end time
     await message.answer(
-        f'{message.from_user.full_name or message.from_user.username}, твой доступ к VPN закончится {database.selector.get_subscription_end_date(message.from_user.id)}')
+        f'''{message.from_user.full_name or message.from_user.username},
+        твой доступ к VPN закончится
+        {database.selector.get_subscription_end_date(message.from_user.id)}''')
 
 
 @rate_limit(limit=2)
 async def cmd_show_subscription(message: types.Message):
     await message.answer(
-        f'{message.from_user.full_name or message.from_user.username}, здесь ты можешь распорядиться своей подпиской', reply_markup=await kb.subscription_management_kb())
+        f'''{message.from_user.full_name or message.from_user.username},
+        здесь ты можешь распорядиться своей подпиской''',
+        reply_markup=await kb.subscription_management_kb())

@@ -27,6 +27,5 @@ toml==0.10.2
 tomli==2.0.1
 tzdata==2022.7
 tzlocal==4.2
-wgconfig==0.3.0
 win32-setctime==1.1.0
 yarl==1.8.2

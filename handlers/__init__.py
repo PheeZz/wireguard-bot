@@ -1,4 +1,3 @@
-from distutils.cmd import Command
 from .user import *
 from .admin import *
 from aiogram.types import ContentType

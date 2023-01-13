@@ -24,8 +24,8 @@ class wireguard_config():
             str: peer private key
         """
         try:
-            private_key = subprocess.run(
-                ['wg', 'genkey'], stdout=subprocess.PIPE).stdout.decode('utf-8')
+            private_key = subprocess.check_output(
+                "wg genkey", shell=True).decode("utf-8").strip()
             logger.success('[+] private key generated')
 
             if save:
@@ -37,20 +37,19 @@ class wireguard_config():
         except Exception as e:
             logger.error(f'[-] {e}')
 
-    def generate_public_key(self, public_key: str, username: str, save: bool = True) -> str:
+    def generate_public_key(self, private_key: str, username: str, save: bool = True) -> str:
         """Generate wireguard peer PUBLIC key
 
         Args:
-            public_key (str): peer private key,
+            private_key (str): peer private key,
             can be generated with self.generate_private_key()
 
         Returns:
             str: peer PUBLIC key
         """
         try:
-            public_key = subprocess.run(
-                ['wg', 'pubkey'], input=public_key,
-                stdout=subprocess.PIPE).stdout.decode('utf-8')
+            public_key = subprocess.check_output(
+                f"echo '{private_key}' | wg pubkey", shell=True).decode("utf-8").strip()
             logger.success('[+] public key generated')
 
             if save:
@@ -58,7 +57,7 @@ class wireguard_config():
                 logger.info(
                     f'[+] public key "{public_key}" for user {username} saved to database')
 
-            return public_key
+            return private_key
         except Exception as e:
             logger.error(f'[-] {e}')
 

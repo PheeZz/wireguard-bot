@@ -37,7 +37,7 @@ async def cmd_pay(message: types.Message) -> types.Message:
     # send invoice
     await bot.send_invoice(message.from_user.id, title='Подписка на VPN', description='Активация VPN на 30 дней',
                            provider_token=PAYMENTS_TOKEN, currency='RUB', prices=[types.LabeledPrice(label='Подписка на VPN', amount=100*100)],
-                           start_parameter='pay', payload='pay', photo_url='https://i.postimg.cc/sDqvTnj6/month.png',
+                           start_parameter='pay', payload='30days_subscription', photo_url='https://i.postimg.cc/sDqvTnj6/month.png',
                            photo_size=256, photo_width=256, photo_height=256,)
 
 
@@ -199,7 +199,7 @@ async def cmd_show_end_time(message: types.Message):
     # show user end time
     await message.answer(
         f'''{message.from_user.full_name or message.from_user.username},
-        твой доступ к VPN закончится
+твой доступ к VPN закончится
         {database.selector.get_subscription_end_date(message.from_user.id)}''')
 
 
@@ -207,5 +207,5 @@ async def cmd_show_end_time(message: types.Message):
 async def cmd_show_subscription(message: types.Message):
     await message.answer(
         f'''{message.from_user.full_name or message.from_user.username},
-        здесь ты можешь распорядиться своей подпиской''',
+здесь ты можешь распорядиться своей подпиской''',
         reply_markup=await kb.subscription_management_kb())

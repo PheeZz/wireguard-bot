@@ -128,7 +128,7 @@ class wireguard_config():
                 cfg.write(
                     f'''#{username}\n[Peer]\nPublicKey = {peer_public_key}
 PresharedKey = {self.server_preshared_key}
-AllowedIPs = {self.add_byte_to_adress(username)}/32\n''')
+AllowedIPs = {self.add_byte_to_adress(username)}/32\n\n''')
                 logger.info(f'[+] new peer {username} added')
         except Exception as e:
             logger.error(f'[-] {e}')
@@ -145,12 +145,12 @@ AllowedIPs = {self.add_byte_to_adress(username)}/32\n''')
             for line in self.config.splitlines():
                 if line.startswith('#') and line[2:] == username:
                     for line in self.config.splitlines():
-                        if line.startswith('AllowedIPs'):
+                        if line.startswith('AllowedIPs') or line.startswith('#AllowedIPs'):
                             peer_adress = line
                     # delete 'AllowedIPs = ' from string
                     logger.info(
                         f"[+] peer adress for user {username} is {peer_adress[13:]}")
-                    return peer_adress[13:]
+                    return peer_adress[13:] if line.startswith('AllowedIPs') else peer_adress[14:]
         except Exception as e:
             logger.error(f'[-] {e}')
 

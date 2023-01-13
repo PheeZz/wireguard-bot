@@ -57,7 +57,7 @@ class wireguard_config():
                 logger.info(
                     f'[+] public key "{public_key}" for user {username} saved to database')
 
-            return private_key
+            return public_key
         except Exception as e:
             logger.error(f'[-] {e}')
 
@@ -126,9 +126,9 @@ class wireguard_config():
         try:
             with open(self.cfg_path, 'a') as cfg:
                 cfg.write(
-                    f'''#{username}\n[Peer]\nPublicKey = {peer_public_key}\n
-PresharedKey = {self.server_preshared_key}\n
-AllowedIPs = {self.add_byte_to_adress(username)}/32\n\n''')
+                    f'''#{username}\n[Peer]\nPublicKey = {peer_public_key}
+PresharedKey = {self.server_preshared_key}
+AllowedIPs = {self.add_byte_to_adress(username)}/32\n''')
                 logger.info(f'[+] new peer {username} added')
         except Exception as e:
             logger.error(f'[-] {e}')

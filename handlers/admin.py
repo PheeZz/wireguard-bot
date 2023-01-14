@@ -51,5 +51,5 @@ async def give_subscription_time(message: types.Message, state: FSMContext) -> t
         await bot.send_message(
             user_id, f'Поздравляем! Администратор продлил вашу подписку на {days} дней!',
             reply_markup=await kb.payed_user_kb())
-        await message.answer(f'''Пользователю {username} продлена подписка на {days} дней\n
+        await message.answer(f'''Пользователю {username} продлена подписка на {days} дней\n\
                              теперь она актуальна до: {database.selector.get_subscription_end_date(user_id)}''')

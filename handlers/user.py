@@ -29,6 +29,8 @@ async def cmd_start(message: types.Message) -> types.Message:
 
     await message.reply(f"Привет,{message.from_user.full_name or message.from_user.username}!\nЧтобы начать пользоваться VPN, оплати подписку",
                         reply_markup=await kb.free_user_kb(message.from_user.id))
+    await bot.send_message(message.from_user.id, 'Подробное описание бота и его функционала доступно на [странице](https://telegra.ph/FAQ-po-botu-01-08), оплачивая подписку, вы соглашаетесь с правилами использования бота и условиями возврата средств, указанными в статье выше.',
+                           parse_mode='Markdown',)
     database.insert_new_user(message)
 
     # notify admin about new user
@@ -38,7 +40,7 @@ async def cmd_start(message: types.Message) -> types.Message:
                                parse_mode='markdown')
 
 
-@rate_limit(limit=5)
+@ rate_limit(limit=5)
 async def cmd_pay(message: types.Message) -> types.Message:
     # send invoice
     await bot.send_invoice(message.from_user.id, title='Подписка на VPN', description='Активация VPN на 30 дней',
@@ -82,7 +84,7 @@ async def cmd_menu(message: types.Message):
         await message.answer('Возвращаю тебя в основное меню', reply_markup=await kb.payed_user_kb())
 
 
-@rate_limit(limit=5)
+@ rate_limit(limit=5)
 async def create_new_config(message: types.Message, state=FSMContext):
     await message.answer('Для какого устройства ты хочешь создать конфиг?', reply_markup=await kb.device_kb(message.from_user.id))
     await New_config.device.set()
@@ -138,7 +140,7 @@ async def cancel_config_creation(call: types.CallbackQuery, state=FSMContext):
     await call.message.edit_text('Отмена создания конфига', reply_markup=None)
 
 
-@rate_limit(limit=5)
+@ rate_limit(limit=5)
 async def cmd_show_config(message: types.Message, state=FSMContext):
     if message.text.lower().endswith('пк'):
         device = 'PC'
@@ -186,7 +188,7 @@ async def cmd_show_config(message: types.Message, state=FSMContext):
                 f'Error while deleting temp files for user {message.from_user.username}; Error: {error}')
 
 
-@rate_limit(limit=5)
+@ rate_limit(limit=5)
 async def cmd_support(message: types.Message):
     # send telegraph page with support info (link: https://telegra.ph/FAQ-po-botu-01-08)
     # place link inside 'странице'and parse it in markdown
@@ -201,7 +203,7 @@ async def cmd_support(message: types.Message):
         parse_mode='Markdown')
 
 
-@rate_limit(limit=5)
+@ rate_limit(limit=5)
 async def cmd_show_end_time(message: types.Message):
     # show user end time
     await message.answer(
@@ -209,7 +211,7 @@ async def cmd_show_end_time(message: types.Message):
 твой доступ к VPN закончится {database.selector.get_subscription_end_date(message.from_user.id)}''')
 
 
-@rate_limit(limit=2)
+@ rate_limit(limit=2)
 async def cmd_show_subscription(message: types.Message):
     await message.answer(
         f'''{message.from_user.full_name or message.from_user.username},

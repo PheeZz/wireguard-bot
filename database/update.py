@@ -86,7 +86,7 @@ def update_given_subscription_time(user_id: int, days: int) -> NoReturn:
         return None
 
 
-def set_user_enddate_to_N(user_id: int, days: int) -> NoReturn:
+def set_user_enddate_to_n(user_id: int, days: int) -> NoReturn:
     """ Update user payment end date in table users
     set date to datetime.now() + N days"""
     try:

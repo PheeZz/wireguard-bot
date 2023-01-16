@@ -43,7 +43,7 @@ async def cmd_start(message: types.Message) -> types.Message:
 @ rate_limit(limit=5)
 async def cmd_pay(message: types.Message) -> types.Message:
     # на данный момент нет возможности подключить платежную систему, поэтому временно отключено
-    await bot.send_message(message.from_user.id, 'В данный момент нет возможности совершить платеж в боте.\
+    await bot.send_message(message.from_user.id, 'В данный момент нет возможности совершить платеж в боте. \
 Для оплаты подписки свяжитесь с администратором @pheezz',)
 
     # send invoice

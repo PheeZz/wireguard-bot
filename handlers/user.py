@@ -34,19 +34,24 @@ async def cmd_start(message: types.Message) -> types.Message:
     database.insert_new_user(message)
 
     # notify admin about new user
-    for ADMIN in ADMINS:
+    for admin in ADMINS:
         # format: Новый пользователь: Имя (id: id), username, id like code format in markdown
-        await bot.send_message(ADMIN, f'Новый пользователь: {message.from_user.full_name} (id: `{message.from_user.id}`), `{message.from_user.username}`',
+        await bot.send_message(admin, f'Новый пользователь: {message.from_user.full_name} (id: `{message.from_user.id}`), `{message.from_user.username}`',
                                parse_mode='markdown')
 
 
 @ rate_limit(limit=5)
 async def cmd_pay(message: types.Message) -> types.Message:
+    # на данный момент нет возможности подключить платежную систему, поэтому временно отключено
+    await bot.send_message(message.from_user.id, 'В данный момент нет возможности совершить платеж в боте.\
+Для оплаты подписки свяжитесь с администратором @pheezz',)
+
     # send invoice
-    await bot.send_invoice(message.from_user.id, title='Подписка на VPN', description='Активация VPN на 30 дней',
-                           provider_token=PAYMENTS_TOKEN, currency='RUB', prices=[types.LabeledPrice(label='Подписка на VPN', amount=110*100)],
-                           start_parameter='30days_subscription', payload='30days_subscription', photo_url='https://i.postimg.cc/sDqvTnj6/month.png',
-                           photo_size=256, photo_width=256, photo_height=256,)
+
+    # await bot.send_invoice(message.from_user.id, title='Подписка на VPN', description='Активация VPN на 30 дней',
+    #                        provider_token=PAYMENTS_TOKEN, currency='RUB', prices=[types.LabeledPrice(label='Подписка на VPN', amount=110*100)],
+    #                        start_parameter='30days_subscription', payload='30days_subscription', photo_url='https://i.postimg.cc/sDqvTnj6/month.png',
+    #                        photo_size=256, photo_width=256, photo_height=256,)
 
 
 # pre checkout query

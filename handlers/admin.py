@@ -31,6 +31,8 @@ async def cmd_info(message: types.Message, state: FSMContext) -> types.Message |
 @is_admin
 async def statistic_endtime(message: types.Message, state: FSMContext):
     users = database.selector.get_all_usernames_and_enddate()
+    # sort by enddate high to low
+    users.sort(key=lambda x: x[1], reverse=True)
     pretty_string = ''.join(
         [f'{user[0]} - {user[1].strftime("%d-%m-%Y")}\n' for user in users])
     await message.answer(f'<pre>{pretty_string}</pre>', parse_mode='HTML')

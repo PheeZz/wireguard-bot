@@ -23,5 +23,13 @@ async def device_kb(user_id: int):
 
     return kb
 
+
+async def cancel_payment_kb():
+    """returns inline keyboard with cancel payment button"""
+    kb = InlineKeyboardMarkup(row_width=1)
+    kb.add(InlineKeyboardButton(
+        text='❌Отмена❌', callback_data='cancel_payment'))
+    return kb
+
 if __name__ == '__main__':
     ...

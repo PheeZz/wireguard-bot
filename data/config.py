@@ -6,6 +6,7 @@ load_dotenv(override=True)
 BOT_TOKEN = os.getenv('WG_BOT_TOKEN')
 PAYMENTS_TOKEN = os.getenv('PAYMENTS_TOKEN')
 ADMINS = list(map(int, os.getenv('ADMINS_IDS').split(',')))
+PAYMENT_CARD = os.getenv('PAYMENT_CARD')
 
 db_connection_parameters = {
     'host': os.getenv('DB_HOST'),

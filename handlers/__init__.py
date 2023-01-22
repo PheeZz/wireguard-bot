@@ -43,12 +43,12 @@ def setup(dp):
     dp.register_callback_query_handler(
         device_selected,
         lambda call: call.data.endswith('config_create_request'),
-        state=New_config.device)
+        state=NewConfig.device)
 
     dp.register_callback_query_handler(
         cancel_config_creation,
         lambda call: call.data == 'cancel_config_creation',
-        state=New_config.device)
+        state=NewConfig.device)
 
     dp.register_message_handler(
         create_new_config,
@@ -71,6 +71,16 @@ def setup(dp):
     dp.register_message_handler(
         cmd_show_subscription,
         text='🕑 Моя подписка',)
+
+    dp.register_message_handler(
+        got_payment_screenshot,
+        state=NewPayment.payment_image,
+        content_types=ContentType.ANY)
+
+    dp.register_callback_query_handler(
+        cancel_payment,
+        lambda call: call.data == 'cancel_payment',
+        state=NewPayment.payment_image)
 
     """moder handlers"""
     dp.register_message_handler(

@@ -59,16 +59,19 @@ def update_user_config_count(user_id: int) -> NoReturn:
 
 def update_given_subscription_time(user_id: int, days: int) -> NoReturn:
     """ Update user payment end date in table users
-    add given days to date in table"""
+    add given days to date in table if user have not expired subscription now
+    else add given days to current date"""
     try:
         conn = pg.connect(**params)
         with conn.cursor() as cursor:
             cursor.execute(
                 """--sql
-                UPDATE users
-                SET subscription_end_date = subscription_end_date + %s
+                UPDATE users SET subscription_end_date = CASE
+                WHEN subscription_end_date < %s THEN %s + %s
+                ELSE subscription_end_date + %s END
                 WHERE user_id = %s
-                """, (timedelta(days=days), user_id))
+                """, (datetime.now(), datetime.now(),
+                      timedelta(days=days), timedelta(days=days), user_id))
 
             conn.commit()
 

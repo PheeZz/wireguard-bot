@@ -4,5 +4,9 @@
 from aiogram.dispatcher.filters.state import State, StatesGroup
 
 
-class New_config(StatesGroup):
+class NewConfig(StatesGroup):
     device = State()
+
+
+class NewPayment(StatesGroup):
+    payment_image = State()

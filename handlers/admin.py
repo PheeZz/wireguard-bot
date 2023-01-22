@@ -40,8 +40,15 @@ async def statistic_endtime(message: types.Message, state: FSMContext):
 @is_admin
 async def give_subscription_time(message: types.Message, state: FSMContext) -> types.Message:
     # /give pheezz 30
-    username, days = message.text.split()[1:]
-    user_id = database.selector.get_user_id(username)
+    # or /give 123456789 30
+
+    if message.text.split()[1].isdigit():
+        user_id = int(message.text.split()[1])
+        days = message.text.split()[2]
+    else:
+        username, days = message.text.split()[1:]
+        user_id = database.selector.get_user_id(username)
+
     try:
         database.update.update_given_subscription_time(
             user_id=user_id, days=int(days))
@@ -51,5 +58,5 @@ async def give_subscription_time(message: types.Message, state: FSMContext) -> t
         await bot.send_message(
             user_id, f'Поздравляем! Администратор продлил вашу подписку на {days} дней!',
             reply_markup=await kb.payed_user_kb())
-        await message.answer(f'''Пользователю {username} продлена подписка на {days} дней
+        await message.answer(f'''Пользователю {user_id} продлена подписка на {days} дней
 теперь она актуальна до: {database.selector.get_subscription_end_date(user_id)}''')

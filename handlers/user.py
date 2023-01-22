@@ -9,10 +9,10 @@ import keyboards as kb
 
 import database
 from loader import bot
-from data.config import PAYMENTS_TOKEN, ADMINS
+from data.config import PAYMENTS_TOKEN, ADMINS, PAYMENT_CARD
 from loader import vpn_config
 
-from utils.fsm import New_config
+from utils.fsm import NewConfig, NewPayment
 import os
 
 
@@ -40,11 +40,12 @@ async def cmd_start(message: types.Message) -> types.Message:
                                parse_mode='markdown')
 
 
-@ rate_limit(limit=5)
-async def cmd_pay(message: types.Message) -> types.Message:
+@rate_limit(limit=5)
+async def cmd_pay(message: types.Message, state: FSMContext) -> types.Message:
     # на данный момент нет возможности подключить платежную систему, поэтому временно отключено
-    await bot.send_message(message.from_user.id, 'В данный момент нет возможности совершить платеж в боте. \
-Для оплаты подписки свяжитесь с администратором @pheezz',)
+    await NewPayment.payment_image.set()
+    await bot.send_message(message.from_user.id, f'В данный момент нет возможности совершить платеж в боте. \
+Для оплаты подписки переведите 100₽ на карту `{PAYMENT_CARD}` и отправьте скриншот чека/операции в ответ на это сообщение.', parse_mode='Markdown', reply_markup=await kb.cancel_payment_kb())
 
     # send invoice
 
@@ -54,7 +55,27 @@ async def cmd_pay(message: types.Message) -> types.Message:
     #                        photo_size=256, photo_width=256, photo_height=256,)
 
 
+@rate_limit(limit=5)
+async def got_payment_screenshot(message: types.Message, state: FSMContext):
+    if message.content_type != 'photo':
+        await message.reply('Пожалуйста, отправьте скриншот чека/операции в ответ на это сообщение.')
+        return
+
+    await message.reply('Подождите, пока мы проверим вашу оплату.')
+    await state.finish()
+    # forwards screenshot to admin
+    for admin in ADMINS:
+        await message.forward(admin)
+        await bot.send_message(admin, f'Пользователь {message.from_user.full_name} (id: `{message.from_user.id}`, username: `{message.from_user.username}`) оплатил подписку на VPN.\n\nПроверьте оплату и активируйте VPN для пользователя.',
+                               parse_mode='markdown')
+
+
+async def cancel_payment(query: types.CallbackQuery, state: FSMContext):
+    await state.finish()
+    await query.message.edit_text('Оплата отменена.', reply_markup=None)
 # pre checkout query
+
+
 async def pre_checkout_query_handler(query: types.PreCheckoutQuery):
     await bot.answer_pre_checkout_query(query.id, ok=True)
 
@@ -92,7 +113,7 @@ async def cmd_menu(message: types.Message):
 @ rate_limit(limit=5)
 async def create_new_config(message: types.Message, state=FSMContext):
     await message.answer('Для какого устройства ты хочешь создать конфиг?', reply_markup=await kb.device_kb(message.from_user.id))
-    await New_config.device.set()
+    await NewConfig.device.set()
 
 
 async def device_selected(call: types.CallbackQuery, state=FSMContext):

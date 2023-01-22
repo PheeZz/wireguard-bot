@@ -15,7 +15,7 @@ def create_table_user() -> NoReturn:
                 """--sql
                 CREATE TABLE IF NOT EXISTS users (
                 id SERIAL PRIMARY KEY,
-                user_id INT UNIQUE,
+                user_id BIGINT UNIQUE,
                 username VARCHAR(255) UNIQUE,
                 is_admin BOOLEAN DEFAULT FALSE,
                 is_banned BOOLEAN DEFAULT FALSE,

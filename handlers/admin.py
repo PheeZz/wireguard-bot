@@ -8,6 +8,7 @@ import keyboards as kb
 from middlewares import rate_limit
 
 from pprint import pformat
+from datetime import datetime
 
 
 def is_admin(func):
@@ -15,7 +16,7 @@ def is_admin(func):
         if message.from_user.id in config.ADMINS:
             await func(message, state)
         else:
-            await message.answer("You don't have permission to use this bot.\n\Write to @pheezz for more info.")
+            await message.answer("You don't have permission to use this command.\n\Write to @pheezz for more info.")
     return wrapped
 
 
@@ -30,9 +31,17 @@ async def cmd_info(message: types.Message, state: FSMContext) -> types.Message |
 @rate_limit(limit=3)
 @is_admin
 async def statistic_endtime(message: types.Message, state: FSMContext):
+    args = message.text.split()[1:]
     users = database.selector.get_all_usernames_and_enddate()
     # sort by enddate high to low
     users.sort(key=lambda x: x[1], reverse=True)
+
+    if 'active' in args:
+        users = [user for user in users if user[1] >= datetime.now()]
+
+    elif ('inactive' in args) or ('notactive' in args) or ('expired' in args):
+        users = [user for user in users if user[1] < datetime.now()]
+
     pretty_string = ''.join(
         [f'{user[0]} - {user[1].strftime("%d-%m-%Y")}\n' for user in users])
     await message.answer(f'<pre>{pretty_string}</pre>', parse_mode='HTML')

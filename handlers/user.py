@@ -27,7 +27,7 @@ async def cmd_start(message: types.Message) -> types.Message:
                                  reply_markup=await kb.payed_user_kb())
         return
 
-    await message.reply(f"Привет,{message.from_user.full_name or message.from_user.username}!\nЧтобы начать пользоваться VPN, оплати подписку",
+    await message.reply(f"Привет, {message.from_user.full_name or message.from_user.username}!\nЧтобы начать пользоваться VPN, оплати подписку",
                         reply_markup=await kb.free_user_kb(message.from_user.id))
     await bot.send_message(message.from_user.id, 'Подробное описание бота и его функционала доступно на [странице](https://telegra.ph/FAQ-po-botu-01-08), оплачивая подписку, вы соглашаетесь с правилами использования бота и условиями возврата средств, указанными в статье выше.',
                            parse_mode='Markdown',)

@@ -2,10 +2,9 @@ import psycopg2 as pg
 from loguru import logger
 from data.config import db_connection_parameters as params
 from datetime import datetime, timedelta
-from typing import NoReturn
 
 
-def update_user_payment(user_id: int) -> NoReturn:
+def update_user_payment(user_id: int) -> None:
     """ Update user payment end date in table users
     add 30 days to current date if user don't have subscription at the moment
     and add 30 days to date in subscription_end_date if user have not expired subscription now
@@ -38,7 +37,7 @@ def update_user_payment(user_id: int) -> NoReturn:
         return None
 
 
-def update_user_config_count(user_id: int) -> NoReturn:
+def update_user_config_count(user_id: int) -> None:
     """ Update user config count in table users
     add 1 to current config count"""
     try:
@@ -57,7 +56,7 @@ def update_user_config_count(user_id: int) -> NoReturn:
         return None
 
 
-def update_given_subscription_time(user_id: int, days: int) -> NoReturn:
+def update_given_subscription_time(user_id: int, days: int) -> None:
     """ Update user payment end date in table users
     add given days to date in table if user have not expired subscription now
     else add given days to current date"""
@@ -89,7 +88,7 @@ def update_given_subscription_time(user_id: int, days: int) -> NoReturn:
         return None
 
 
-def set_user_enddate_to_n(user_id: int, days: int) -> NoReturn:
+def set_user_enddate_to_n(user_id: int, days: int) -> None:
     """ Update user payment end date in table users
     set date to datetime.now() + N days"""
     try:

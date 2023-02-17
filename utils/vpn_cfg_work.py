@@ -1,6 +1,5 @@
 from loguru import logger
 from os import getenv
-from typing import NoReturn
 import database
 import subprocess
 
@@ -66,7 +65,7 @@ class wireguard_config():
         public_key = self.generate_public_key(private_key, username=username)
         return private_key, public_key
 
-    def restart_service(self) -> NoReturn:
+    def restart_service(self) -> None:
         """restart wireguard service
         """
         try:
@@ -121,7 +120,7 @@ class wireguard_config():
             f"[+] new peer adress is {'.'.join(adress)} for user {username}")
         return '.'.join(adress)
 
-    def add_new_peer(self, username: str, peer_public_key: str) -> NoReturn:
+    def add_new_peer(self, username: str, peer_public_key: str) -> None:
         """adds new peer to config file"""
         try:
             with open(self.cfg_path, 'a') as cfg:

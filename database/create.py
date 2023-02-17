@@ -1,10 +1,9 @@
 import psycopg2 as pg
-from typing import NoReturn
 from loguru import logger
 from data.config import db_connection_parameters as params
 
 
-def create_table_user() -> NoReturn:
+def create_table_user() -> None:
     """ Create table user in database wireguard_bot
     Default value for subscription_end_date is 999 days ago
     """
@@ -29,7 +28,7 @@ def create_table_user() -> NoReturn:
         logger.error(f'[-] {error}')
 
 
-def create_table_payment() -> NoReturn:
+def create_table_payment() -> None:
     """ Create table payment in database wireguard_bot"""
     try:
         conn = pg.connect(**params)
@@ -52,7 +51,7 @@ def create_table_payment() -> NoReturn:
         logger.error(f'[-] {error}')
 
 
-def create_table_vpn_config() -> NoReturn:
+def create_table_vpn_config() -> None:
     """ Create table vpn_config in database wireguard_bot"""
     try:
         conn = pg.connect(**params)

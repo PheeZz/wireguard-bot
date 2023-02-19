@@ -22,7 +22,7 @@
 
 6. Sample .service file
 
-   Path: `/etc/systemd/system/telegram-bot.service` </br>
+   Path: `/etc/systemd/system/wireguard-bot.service` </br>
    Code: (if you using python 3.10)</br>
 
    ```
@@ -34,15 +34,15 @@
     Type=idle
     Restart=on-failure
     User=root
-    ExecStart=/bin/bash -c 'cd ~/telegram-bot/ && source .venv/bin/activate && python3.10 app.py'
+    ExecStart=/bin/bash -c 'cd ~/wireguard-bot/ && source .venv/bin/activate && python3.10 app.py'
 
     [Install]
     WantedBy=multi-user.target
    ```
 
 7. Enable service and start it</br>
-   `systemctl enable telegram-bot.service`</br>
-   `systemctl start telegram-bot.service`
+   `systemctl enable wireguard-bot.service`</br>
+   `systemctl start wireguard-bot.service`
 
 ## Extra
 

@@ -74,3 +74,5 @@ DB_HOST = <str>
 DB_PORT = <str>
 
 ```
+
+## As database used `Postgres`

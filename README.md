@@ -41,9 +41,15 @@
    ```
 
 7. Enable service and start it</br>
-   `systemctl enable wireguard-bot.service`</br>
-   `systemctl start wireguard-bot.service`
+   ```
+   systemctl enable wireguard-bot.service
+   systemctl start wireguard-bot.service
+   ```
 
+8. Install qrencode package for generating QR code for mobile configs
+   ```
+   sudo apt install qrencode
+   ```
 ## Extra
 
 `pip-review --local --auto` - update all libs

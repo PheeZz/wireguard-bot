@@ -99,7 +99,7 @@ QR code generator: qrencode<br/>
    #token for telegram invoice payments, if you don't use payments, just leave it empty
    PAYMENTS_TOKEN = <str>
    #your telegram id, you can get it from @userinfobot or @myidbot or @RawDataBot
-   ADMINS_IDS = <str>
+   ADMINS_IDS = <list>
    #your bank card number, if you will use payments with "handmade" method
    PAYMENT_CARD = <str>
 

@@ -99,7 +99,7 @@ QR code generator: qrencode<br/>
    #token for telegram invoice payments, if you don't use payments, just leave it empty
    PAYMENTS_TOKEN = <str>
    #your telegram id, you can get it from @userinfobot or @myidbot or @RawDataBot
-   ADMINS_IDS = <list>
+   ADMINS_IDS = <str>
    #your bank card number, if you will use payments with "handmade" method
    PAYMENT_CARD = <str>
 
@@ -116,9 +116,9 @@ QR code generator: qrencode<br/>
    ```
 
 6. Configure your database tables<br/>
+   Move create script from database/create.py to project root folder and run it
 
    ```bash
-   #move create script from database/create.py to project root folder and run it
    mv database/create.py . && python3.10 create.py
    ```
 
@@ -134,6 +134,7 @@ QR code generator: qrencode<br/>
    sudo apt install qrencode
    ```
 
+8. Create .service file for your bot</br>
    Path: `/etc/systemd/system/wireguard-bot.service` </br>
    Code: (if you using python 3.10)</br>
 
@@ -152,18 +153,30 @@ QR code generator: qrencode<br/>
     WantedBy=multi-user.target
    ```
 
-8. Enable service and start it</br>
+9. Enable service and start it</br>
 
    ```bash
    systemctl enable wireguard-bot.service
    systemctl start wireguard-bot.service
    ```
 
-9. Finally, you can use your bot and enjoy it ❤️
+10. Finally, you can use your bot and enjoy it ❤️
 
 ## Extra
 
-### you can use pip-review for updating your libs
+### Admin commands (aviable in chat with bot)
+
+1. `/give <user_id> <days>` - give user access to VPN for \<days> days.<br/>
+   Also you can use this command with \<@username> instead of \<user_id>.<br/>
+   If you want to disable user's access, just use `/give <user_id> -9999` or any negative number that will be higher than user's access expiration date.<br/>
+   <b>WARNING:</b> disconnecting user will not remove his access from database, so you can give him access again later.
+   Example: `/give 123456789 30` - give user with id 123456789 access to VPN for 30 days.
+2. `/stats` - show stats about users and their access expiration dates.<br/>
+   Aviable options: `/stats active` - show active users.<br/>
+   `/stats inactive` - show inactive users.<br/>
+   `/stats` without options will show all users.
+
+### You can use pip-review for updating your libs
 
 ```bash
 pip-review --local --auto

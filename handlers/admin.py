@@ -72,3 +72,10 @@ async def give_subscription_time(message: types.Message, state: FSMContext) -> t
             reply_markup=await kb.payed_user_kb())
         await message.answer(f'''Пользователю {user_id} продлена подписка на {days} дней
 теперь она актуальна до: {database.selector.get_subscription_end_date(user_id)}''')
+
+
+@rate_limit(limit=3)
+@is_admin
+async def restart_wg_service_admin(message: types.Message, state: FSMContext):
+    vpn_config.restart_wg_service()
+    await message.answer('Сервис WireGuard перезапущен')

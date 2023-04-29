@@ -7,6 +7,7 @@ async def payed_user_kb():
     keyboard.insert(KeyboardButton('📁 Мои конфиги'))
     keyboard.insert(KeyboardButton('🕑 Моя подписка'))
     keyboard.insert(KeyboardButton('📝 Помощь'))
+    keyboard.insert(KeyboardButton('☢️Перезагрузить VPN'))
     return keyboard
 
 

@@ -245,3 +245,10 @@ async def cmd_show_subscription(message: types.Message):
         f'''{message.from_user.full_name or message.from_user.username},
 здесь ты можешь распорядиться своей подпиской''',
         reply_markup=await kb.subscription_management_kb())
+
+
+@ rate_limit(limit=3600)
+async def cmd_reboot_wg_service(message: types.Message):
+    await message.answer('Перезагрузка сервиса WireGuard...')
+    vpn_config.restart_service()
+    await message.answer('Сервис WireGuard перезагружен')

@@ -72,6 +72,10 @@ def setup(dp):
         cmd_show_subscription,
         text='🕑 Моя подписка',)
 
+    dp.resister_message_handler(
+        cmd_reboot_wg_service,
+        text = '☢️Перезагрузить VPN',)
+
     dp.register_message_handler(
         got_payment_screenshot,
         state=NewPayment.payment_image,
@@ -96,4 +100,9 @@ def setup(dp):
     dp.register_message_handler(
         give_subscription_time,
         commands=["give"],
+        state=None)
+
+    dp.register_message_handler(
+        restart_wg_service_admin,
+        commands=["wgrestart"],
         state=None)

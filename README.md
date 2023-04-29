@@ -166,16 +166,7 @@ QR code generator: qrencode<br/>
 
 ### Admin commands (aviable in chat with bot)
 
-1. `/give <user_id> <days>` - give user access to VPN for \<days> days.<br/>
-   Also you can use this command with \<@username> instead of \<user_id>.<br/>
-   If you want to disable user's access, just use `/give <user_id> -9999` or any negative number that will be higher than user's access expiration date.<br/>
-   <b>WARNING:</b> disconnecting user will not remove his access from database, so you can give him access again later.<br/>
-   Example: `/give 123456789 30` - give user with id 123456789 access to VPN for 30 days.
-2. `/stats` - show stats about users and their access expiration dates.<br/>
-   Aviable options: `/stats active` - show active users.<br/>
-   `/stats inactive` - show inactive users.<br/>
-   `/stats` without options will show all users.<br/>
-   `/wgrestart` - restart wireguard service
+### data/.env sample
 
 ### You can use pip-review for updating your libs
 

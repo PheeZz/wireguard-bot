@@ -16,6 +16,8 @@ from utils.fsm import NewConfig, NewPayment
 import os
 
 
+
+
 @rate_limit(limit=5)
 async def cmd_start(message: types.Message) -> types.Message:
     if database.selector.is_exist_user(message.from_user.id):

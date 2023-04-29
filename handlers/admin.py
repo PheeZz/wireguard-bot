@@ -1,6 +1,6 @@
 from aiogram import types
 from aiogram.dispatcher import FSMContext
-from loader import bot
+from loader import bot, vpn_config
 
 from data import config
 import database
@@ -66,6 +66,7 @@ async def give_subscription_time(message: types.Message, state: FSMContext) -> t
     except Exception as e:
         await message.answer(f'Error: {e}')
     else:
+        vpn_config.reconnect_payed_user(user_id=user_id)
         await bot.send_message(
             user_id, f'Поздравляем! Администратор продлил вашу подписку на {days} дней!',
             reply_markup=await kb.payed_user_kb())

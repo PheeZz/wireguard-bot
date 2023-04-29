@@ -94,7 +94,7 @@ class wireguard_config():
         except Exception as e:
             logger.error(f'[-] {e}')
 
-    def add_byte_to_adress(self, username: str) -> str:
+    def add_byte_to_adress(self, username: str) -> str | None:
         """adds 1 byte to adress
         """
         adress = self.last_peer_adress.split('.')
@@ -153,7 +153,7 @@ AllowedIPs = {self.add_byte_to_adress(username)}/32\n\n''')
         except Exception as e:
             logger.error(f'[-] {e}')
 
-    def create_peer_config(self, peer_private_key: str, username: str) -> str:
+    def create_peer_config(self, peer_private_key: str) -> str:
         """creates config for client and returns it as string
         """
         return f'''[Interface]
@@ -184,7 +184,7 @@ PersistentKeepalive = 20'''
         # restart wg-quick
         self.restart_service()
 
-        return self.create_peer_config(user_priv_key, f'{username}_{device}')
+        return self.create_peer_config(user_priv_key)
 
     def disconnect_peer(self, user_id: int):
         """disconnects peer by username

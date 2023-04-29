@@ -18,7 +18,6 @@ async def on_startup(dp):
     from loguru import logger
     import time
     from utils.Watchdog import Watchdog
-
     middlewares.setup(dp)
     await set_commands(dp)
     handlers.setup(dp)
@@ -30,9 +29,11 @@ async def on_startup(dp):
     daemon.run()
     logger.success('[+] Bot started successfully')
 
+
 if __name__ == "__main__":
     # Launch
     from aiogram import executor
     from handlers import dp
 
     executor.start_polling(dp, skip_updates=True, on_startup=on_startup)
+

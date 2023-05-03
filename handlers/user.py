@@ -20,6 +20,10 @@ import os
 
 @rate_limit(limit=5)
 async def cmd_start(message: types.Message) -> types.Message:
+    if not message.from_user.username:
+        await message.answer(f'''Привет, {message.from_user.full_name}!\nУ тебя не установлен username, установи его в настройках телеграма и напиши /start\n\
+Если не знаешь как это сделать - посмотри [справку](https://silverweb.by/kak-sozdat-nik-v-telegramm/)''', parse_mode='Markdown')
+        return
     if database.selector.is_exist_user(message.from_user.id):
         if database.selector.is_subscription_end(message.from_user.id):
             await message.answer(f'Привет, {message.from_user.full_name or message.from_user.username}, твоя подписка закончилась, оплати её, чтобы продолжить пользоваться VPN',
@@ -48,13 +52,6 @@ async def cmd_pay(message: types.Message, state: FSMContext) -> types.Message:
     await NewPayment.payment_image.set()
     await bot.send_message(message.from_user.id, f'В данный момент нет возможности совершить платеж в боте. \
 Для оплаты подписки переведите 100₽ на карту `{PAYMENT_CARD}` и отправьте скриншот чека/операции в ответ на это сообщение.', parse_mode='Markdown', reply_markup=await kb.cancel_payment_kb())
-
-    # send invoice
-
-    # await bot.send_invoice(message.from_user.id, title='Подписка на VPN', description='Активация VPN на 30 дней',
-    #                        provider_token=PAYMENTS_TOKEN, currency='RUB', prices=[types.LabeledPrice(label='Подписка на VPN', amount=110*100)],
-    #                        start_parameter='30days_subscription', payload='30days_subscription', photo_url='https://i.postimg.cc/sDqvTnj6/month.png',
-    #                        photo_size=256, photo_width=256, photo_height=256,)
 
 
 @rate_limit(limit=5)

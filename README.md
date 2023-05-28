@@ -182,3 +182,8 @@ QR code generator: qrencode<br/>
 ```bash
 pip-review --local --auto
 ```
+
+## TODO
+1. Migrate from pip to poetry.
+2. Simplify installation.
+3. Maybe add docker-file. 

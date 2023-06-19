@@ -136,7 +136,7 @@ async def device_selected(call: types.CallbackQuery, state=FSMContext):
                                device=device,
                                config=user_config)
 
-    with open(f'data/temp/TURKEY_{call.from_user.username}.conf', 'w') as f:
+    with open(f'data/temp/TURKEY_{call.from_user.username}_{device}.conf', 'w') as f:
         f.write(user_config)
 
     # send config file

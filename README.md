@@ -71,6 +71,7 @@ QR code generator: qrencode<br/>
    CREATE DATABASE <database_name>;
    CREATE USER <user_name> WITH PASSWORD '<password>';
    GRANT ALL PRIVILEGES ON DATABASE <database_name> TO <user_name>;
+   GRANT ALL ON ALL TABLES IN SCHEMA "public" TO <user_name>;
    \q
    ```
 
@@ -182,3 +183,9 @@ QR code generator: qrencode<br/>
 ```bash
 pip-review --local --auto
 ```
+
+## TODO
+1. Migrate from pip to poetry.
+2. Refactor code in utils/Watchdog.py
+3. Simplify installation.
+4. Maybe add docker-file. 

@@ -72,7 +72,7 @@ def setup(dp):
         cmd_show_subscription,
         text='🕑 Моя подписка',)
 
-    dp.resister_message_handler(
+    dp.register_message_handler(
         cmd_reboot_wg_service,
         text = '☢️Перезагрузить VPN',)
 

@@ -38,7 +38,7 @@ def create_table_payment() -> None:
                 """--sql
                 CREATE TABLE IF NOT EXISTS payment(
                 id SERIAL PRIMARY KEY,
-                user_id INT,
+                user_id BIGINT,
                 amount INT,
                 date TIMESTAMP,
                 FOREIGN KEY(user_id) REFERENCES users(user_id)
@@ -61,7 +61,7 @@ def create_table_vpn_config() -> None:
                 """--sql
                 CREATE TABLE IF NOT EXISTS vpn_config (
                 id SERIAL PRIMARY KEY,
-                user_id INT,
+                user_id BIGINT,
                 config_name VARCHAR(255),
                 config TEXT,
                 FOREIGN KEY (user_id) REFERENCES users (user_id))

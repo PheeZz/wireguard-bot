@@ -140,7 +140,7 @@ async def device_selected(call: types.CallbackQuery, state=FSMContext):
         f.write(user_config)
 
     # send config file
-    await call.message.answer_document(types.InputFile(f'data/temp/TURKEY_{call.from_user.username}.conf'),
+    await call.message.answer_document(types.InputFile(f'data/temp/TURKEY_{call.from_user.username}_{device}.conf'),
                                        reply_markup=await kb.configs_kb(call.from_user.id))
 
     if device == "PHONE":

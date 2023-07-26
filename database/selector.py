@@ -216,3 +216,21 @@ def get_username_by_id(user_id: int) -> str | bool:
     except (Exception, pg.DatabaseError) as error:
         logger.error(f"[-] {error}")
         return False
+
+
+def is_subscription_expired(user_id: int) -> bool:
+    """Check if user subscription is expired"""
+    try:
+        conn = pg.connect(**params)
+        with conn.cursor() as cursor:
+            cursor.execute(
+                """--sql
+                SELECT subscription_end_date FROM users WHERE user_id = %s
+                """,
+                (user_id,),
+            )
+            date = cursor.fetchone()[0]
+            return date < datetime.now()
+    except (Exception, pg.DatabaseError) as error:
+        logger.error(f"[-] {error}")
+        return False

@@ -226,9 +226,10 @@ class wireguard_config:
 
             with open(self.cfg_path, "w") as cfg:
                 cfg.write(config)
-                # restart wg-quick
-                self.restart_service()
-                logger.info(f"[+] peer {username} disconnected")
+
+            # restart wg-quick
+            self.restart_service()
+            logger.info(f"[+] peer {username} disconnected")
 
         except Exception as e:
             logger.error(f"[-] {e}")
@@ -265,9 +266,9 @@ class wireguard_config:
 
             with open(self.cfg_path, "w") as cfg:
                 cfg.write(config)
-                # restart wg-quick
-                self.restart_service()
-                logger.info(f"[+] peer {username} reconnected")
+            # restart wg-quick
+            self.restart_service()
+            logger.info(f"[+] peer {username} reconnected")
 
         except Exception as e:
             logger.error(f"[-] {e}")

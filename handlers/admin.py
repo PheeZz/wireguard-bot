@@ -69,6 +69,8 @@ async def give_subscription_time(
 
     try:
         database.update.update_given_subscription_time(user_id=user_id, days=int(days))
+        if database.selector.is_subscription_expired(user_id):
+            vpn_config.disconnect_peer(user_id)
     except Exception as e:
         await message.answer(f"Error: {e}")
     else:

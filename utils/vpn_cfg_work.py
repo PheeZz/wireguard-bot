@@ -118,9 +118,9 @@ class wireguard_config:
         try:
             with open(self.cfg_path, "a") as cfg:
                 cfg.write(
-                    f"""#{username}\n[Peer]\nPublicKey = {peer_public_key}
-PresharedKey = {self.server_preshared_key}
-AllowedIPs = {self.add_byte_to_adress(username)}/32\n\n"""
+                    f"#{username}\n[Peer]\nPublicKey = {peer_public_key}"
+                    f"PresharedKey = {self.server_preshared_key}"
+                    f"AllowedIPs = {self.add_byte_to_adress(username)}/32\n\n"
                 )
                 logger.info(f"[+] new peer {username} added")
         except Exception as e:
@@ -155,17 +155,19 @@ AllowedIPs = {self.add_byte_to_adress(username)}/32\n\n"""
 
     def create_peer_config(self, peer_private_key: str) -> str:
         """creates config for client and returns it as string"""
-        return f"""[Interface]
-PrivateKey = {peer_private_key}
-Address = {self.last_peer_adress}
-DNS = 8.8.8.8
-
-[Peer]
-PublicKey = {self.server_public_key}
-PresharedKey = {self.server_preshared_key}
-AllowedIPs = 0.0.0.0/0
-Endpoint = {self.server_ip}:{self.server_port}
-PersistentKeepalive = 20"""
+        cfg = (
+            f"[Interface]"
+            f"PrivateKey = {peer_private_key}"
+            f"Address = {self.last_peer_adress}"
+            f"DNS = 8.8.8.8\n"
+            f"[Peer]"
+            f"PublicKey = {self.server_public_key}"
+            f"PresharedKey = {self.server_preshared_key}"
+            f"AllowedIPs = 0.0.0.0/0"
+            f"Endpoint = {self.server_ip}:{self.server_port}"
+            f"PersistentKeepalive = 20"
+        )
+        return cfg
 
     def update_server_config(self, username: str, device: str) -> str:
         """adds new peer to config file and restarts wg-quick

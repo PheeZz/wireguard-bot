@@ -43,6 +43,8 @@ QR code generator: qrencode<br/>
    poetry shell
    ```
 
+   > REMEMBER path to your virtualenv, you will need it later
+
 3. Download required libs<br/>
 
    ```bash
@@ -136,7 +138,7 @@ QR code generator: qrencode<br/>
     Type=idle
     Restart=on-failure
     User=root
-    ExecStart=/bin/bash -c 'cd ~/wireguard-bot/ && source .venv/bin/activate && python3.10 app.py'
+    ExecStart=/bin/bash -c 'cd ~/wireguard-bot/ && source <path to venv from step 2> && python3.10 app.py'
 
     [Install]
     WantedBy=multi-user.target
@@ -153,7 +155,7 @@ QR code generator: qrencode<br/>
 
 ## Extra
 
-### Admin commands (aviable in chat with bot)
+### Admin commands (available in chat with bot)
 
 1. `/give <user_id> <days>` - give user access to VPN for \<days> days.<br/>
    Also you can use this command with \<@username> instead of \<user_id>.<br/>
@@ -166,11 +168,6 @@ QR code generator: qrencode<br/>
    `/stats` without options will show all users.<br/>
    `/wgrestart` - restart wireguard service
 
-### You can use pip-review for updating your libs
-
-```bash
-pip-review --local --auto
-```
 
 ## TODO
 

@@ -4,18 +4,22 @@ from database.selector import is_user_have_config, all_user_configs
 
 async def payed_user_kb():
     keyboard = ReplyKeyboardMarkup(row_width=2, resize_keyboard=True)
-    keyboard.insert(KeyboardButton('📁 Мои конфиги'))
-    keyboard.insert(KeyboardButton('🕑 Моя подписка'))
-    keyboard.insert(KeyboardButton('📝 Помощь'))
-    keyboard.insert(KeyboardButton('☢️Перезагрузить VPN'))
+    keyboard.insert(KeyboardButton("📁 Мои конфиги"))
+    keyboard.insert(KeyboardButton("🕑 Моя подписка"))
+    keyboard.insert(KeyboardButton("📝 Помощь"))
+    keyboard.insert(KeyboardButton("☢️Перезагрузить VPN"))
     return keyboard
 
 
 async def free_user_kb(user_id: int):
     keyboard = ReplyKeyboardMarkup(row_width=2, resize_keyboard=True)
-    keyboard.insert(KeyboardButton('💵 Оплатить',))
+    keyboard.insert(
+        KeyboardButton(
+            "💵 Оплатить",
+        )
+    )
     if is_user_have_config(user_id=user_id):
-        keyboard.insert(KeyboardButton('📁 Мои конфиги'))
+        keyboard.insert(KeyboardButton("📁 Мои конфиги"))
     return keyboard
 
 
@@ -25,20 +29,23 @@ async def configs_kb(user_id: int):
 
     if configs:
         for config in configs:
-            configs_kb.insert(KeyboardButton(
-                f"🔐 {'ПК' if config[0].split('_')[-1] == 'PC' else 'Смартфон'}"))
+            configs_kb.insert(
+                KeyboardButton(
+                    f"🔐 {'ПК' if config[0].split('_')[-1] == 'PC' else 'Смартфон'}"
+                )
+            )
 
     if not configs or len(configs) < 2:
-        configs_kb.insert(KeyboardButton('🆕 Создать конфиг'))
+        configs_kb.insert(KeyboardButton("🆕 Создать конфиг"))
 
-    configs_kb.insert(KeyboardButton('🔙 Назад'))
+    configs_kb.insert(KeyboardButton("🔙 Назад"))
 
     return configs_kb
 
 
 async def subscription_management_kb():
     keyboard = ReplyKeyboardMarkup(row_width=2, resize_keyboard=True)
-    keyboard.insert(KeyboardButton('📅 Дата отключения'))
-    keyboard.insert(KeyboardButton('💵 Продлить'))
-    keyboard.insert(KeyboardButton('🔙 Назад'))
+    keyboard.insert(KeyboardButton("📅 Дата отключения"))
+    keyboard.insert(KeyboardButton("💵 Продлить"))
+    keyboard.insert(KeyboardButton("🔙 Назад"))
     return keyboard

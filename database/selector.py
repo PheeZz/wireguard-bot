@@ -5,106 +5,112 @@ from datetime import datetime, timedelta
 
 
 def is_exist_user(user_id: int) -> bool:
-    """ Check if user is exist in database"""
+    """Check if user is exist in database"""
     try:
         conn = pg.connect(**params)
         with conn.cursor() as cursor:
             cursor.execute(
                 """--sql
                 SELECT EXISTS(SELECT 1 FROM users WHERE user_id = %s)
-                """, (user_id,)
+                """,
+                (user_id,),
             )
             return cursor.fetchone()[0]
 
     except (Exception, pg.DatabaseError) as error:
-        logger.error(f'[-] {error}')
+        logger.error(f"[-] {error}")
         return False
 
 
 def is_user_have_config(user_id: int) -> bool:
-    """ Check if user have config in database"""
+    """Check if user have config in database"""
     try:
         conn = pg.connect(**params)
         with conn.cursor() as cursor:
             cursor.execute(
                 """--sql
                 SELECT EXISTS(SELECT 1 FROM vpn_config WHERE user_id = %s)
-                """, (user_id,)
+                """,
+                (user_id,),
             )
             return cursor.fetchone()[0]
     except (Exception, pg.DatabaseError) as error:
-        logger.error(f'[-] {error}')
+        logger.error(f"[-] {error}")
         return False
 
 
-def all_user_configs(user_id: int) -> list:
-    """ Get all user configs"""
+def all_user_configs(user_id: int) -> list[str] | bool:
+    """Get all user configs"""
     try:
         conn = pg.connect(**params)
         with conn.cursor() as cursor:
             cursor.execute(
                 """--sql
                 SELECT config_name FROM vpn_config WHERE user_id = %s
-                """, (user_id,)
+                """,
+                (user_id,),
             )
             return cursor.fetchall()
     except (Exception, pg.DatabaseError) as error:
-        logger.error(f'[-] {error}')
+        logger.error(f"[-] {error}")
         return False
 
 
 def is_subscription_end(user_id: int) -> bool:
-    """ Check if user subscription is end"""
+    """Check if user subscription is end"""
     try:
         conn = pg.connect(**params)
         with conn.cursor() as cursor:
             cursor.execute(
                 """--sql
                 SELECT subscription_end_date FROM users WHERE user_id = %s
-                """, (user_id,)
+                """,
+                (user_id,),
             )
             date = cursor.fetchone()[0]
             return date < datetime.now()
     except (Exception, pg.DatabaseError) as error:
-        logger.error(f'[-] {error}')
+        logger.error(f"[-] {error}")
         return False
 
 
-def get_subscription_end_date(user_id: int) -> datetime:
-    """ Get user subscription end date"""
+def get_subscription_end_date(user_id: int) -> datetime | bool:
+    """Get user subscription end date"""
     try:
         conn = pg.connect(**params)
         with conn.cursor() as cursor:
             cursor.execute(
                 """--sql
                 SELECT subscription_end_date FROM users WHERE user_id = %s
-                """, (user_id,)
+                """,
+                (user_id,),
             )
             # return date in format: day-month-year
-            return cursor.fetchone()[0].strftime('%d-%m-%Y')
+            return cursor.fetchone()[0].strftime("%d-%m-%Y")
     except (Exception, pg.DatabaseError) as error:
-        logger.error(f'[-] {error}')
+        logger.error(f"[-] {error}")
         return False
 
 
-def get_user_config(user_id: int, config_name: str) -> str:
-    """ Get user config"""
+def get_user_config(user_id: int, config_name: str) -> str | bool:
+    """Get user config"""
     try:
         conn = pg.connect(**params)
         with conn.cursor() as cursor:
             cursor.execute(
                 """--sql
                 SELECT config FROM vpn_config WHERE user_id = %s AND config_name = %s
-                """, (user_id, config_name)
+                """,
+                (user_id, config_name),
             )
             return cursor.fetchone()[0]
     except (Exception, pg.DatabaseError) as error:
-        logger.error(f'[-] {error}')
+        logger.error(f"[-] {error}")
         return False
 
 
-def get_all_usernames_and_enddate() -> list:
-    """ Get all usernames and subscription end date"""
+def get_all_usernames_and_enddate() -> list | bool:
+    """Get all usernames and subscription end date"""
     try:
         conn = pg.connect(**params)
         with conn.cursor() as cursor:
@@ -115,12 +121,12 @@ def get_all_usernames_and_enddate() -> list:
             )
             return cursor.fetchall()
     except (Exception, pg.DatabaseError) as error:
-        logger.error(f'[-] {error}')
+        logger.error(f"[-] {error}")
         return False
 
 
-def get_user_ids_and_enddate() -> list:
-    """ Get all user_ids and subscription end date"""
+def get_user_ids_and_enddate() -> list | bool:
+    """Get all user_ids and subscription end date"""
     try:
         conn = pg.connect(**params)
         with conn.cursor() as cursor:
@@ -131,28 +137,29 @@ def get_user_ids_and_enddate() -> list:
             )
             return cursor.fetchall()
     except (Exception, pg.DatabaseError) as error:
-        logger.error(f'[-] {error}')
+        logger.error(f"[-] {error}")
         return False
 
 
 def get_user_id(username: str) -> int:
-    """ Get user id"""
+    """Get user id"""
     try:
         conn = pg.connect(**params)
         with conn.cursor() as cursor:
             cursor.execute(
                 """--sql
                 SELECT user_id FROM users WHERE username = %s
-                """, (username,)
+                """,
+                (username,),
             )
             return cursor.fetchone()[0]
     except (Exception, pg.DatabaseError) as error:
-        logger.error(f'[-] {error}')
+        logger.error(f"[-] {error}")
         return False
 
 
-def get_all_user_ids() -> list:
-    """ Get all user ids"""
+def get_all_user_ids() -> list[int] | bool:
+    """Get all user ids"""
     try:
         conn = pg.connect(**params)
         with conn.cursor() as cursor:
@@ -163,12 +170,12 @@ def get_all_user_ids() -> list:
             )
             return cursor.fetchall()
     except (Exception, pg.DatabaseError) as error:
-        logger.error(f'[-] {error}')
+        logger.error(f"[-] {error}")
         return False
 
 
-def get_user_ids_enddate_N_days(days: int) -> list[int]:
-    """ Get user ids where subscription ends in N days
+def get_user_ids_enddate_n_days(days: int) -> list[int] | bool:
+    """Get user ids where subscription ends in N days
     don't watch at hours, minutes, seconds, milliseconds
     """
     match days:
@@ -185,25 +192,27 @@ def get_user_ids_enddate_N_days(days: int) -> list[int]:
             cursor.execute(
                 """--sql
                 SELECT user_id FROM users WHERE subscription_end_date BETWEEN %s AND %s
-                """, (datetime.now() - shift, datetime.now() + timedelta(days=days))
+                """,
+                (datetime.now() - shift, datetime.now() + timedelta(days=days)),
             )
             return [item[0] for item in cursor.fetchall()]
     except (Exception, pg.DatabaseError) as error:
-        logger.error(f'[-] {error}')
+        logger.error(f"[-] {error}")
         return False
 
 
-def get_username_by_id(user_id: int) -> str:
-    """ Get username by user id"""
+def get_username_by_id(user_id: int) -> str | bool:
+    """Get username by user id"""
     try:
         conn = pg.connect(**params)
         with conn.cursor() as cursor:
             cursor.execute(
                 """--sql
                 SELECT username FROM users WHERE user_id = %s
-                """, (user_id,)
+                """,
+                (user_id,),
             )
             return cursor.fetchone()[0]
     except (Exception, pg.DatabaseError) as error:
-        logger.error(f'[-] {error}')
+        logger.error(f"[-] {error}")
         return False

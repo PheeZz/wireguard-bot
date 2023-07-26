@@ -11,10 +11,10 @@ def cmd_cleaner(message: Message) -> Message:
         message: message object from aiogram
     """
     _map = {
-        '/command': '',
-        '/other_command': '',
-        '@botname_bot': '',
-        '/': '',
+        "/command": "",
+        "/other_command": "",
+        "@botname_bot": "",
+        "/": "",
     }
     for key, value in _map.items():
         message.text = message.text.replace(key, value)
@@ -31,7 +31,7 @@ def get_appeal(call: CallbackQuery) -> str:
     Returns:
         str: appeal for user
     """
-    return call['from']['first_name'] or call['from']['username']
+    return call["from"]["first_name"] or call["from"]["username"]
 
 
 # unused now, cause using middlewares.ThrottlingMiddleware
@@ -39,5 +39,3 @@ async def anti_flood(*args, **kwargs):
     message = args[0]
 
     await message.answer("Не флуди 👀")
-
-

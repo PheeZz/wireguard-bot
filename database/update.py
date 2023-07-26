@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 
 
 def update_user_payment(user_id: int) -> None:
-    """ Update user payment end date in table users
+    """Update user payment end date in table users
     add 30 days to current date if user don't have subscription at the moment
     and add 30 days to date in subscription_end_date if user have not expired subscription now
     """
@@ -18,8 +18,15 @@ def update_user_payment(user_id: int) -> None:
                 WHEN subscription_end_date < %s THEN %s + %s
                 ELSE subscription_end_date + %s END
                 WHERE user_id = %s
-                """, (datetime.now(), datetime.now(),
-                      timedelta(days=30), timedelta(days=30), user_id))
+                """,
+                (
+                    datetime.now(),
+                    datetime.now(),
+                    timedelta(days=30),
+                    timedelta(days=30),
+                    user_id,
+                ),
+            )
 
             conn.commit()
 
@@ -27,18 +34,21 @@ def update_user_payment(user_id: int) -> None:
             cursor.execute(
                 """--sql
                 SELECT username FROM users WHERE user_id = %s
-                """, (user_id,))
+                """,
+                (user_id,),
+            )
             username = cursor.fetchone()[0]
 
             logger.info(
-                f'[+] user {user_id}::{username} payment updated; added: 30 days')
+                f"[+] user {user_id}::{username} payment updated; added: 30 days"
+            )
     except (Exception, pg.DatabaseError) as error:
-        logger.error(f'[-] {error}')
+        logger.error(f"[-] {error}")
         return None
 
 
 def update_user_config_count(user_id: int) -> None:
-    """ Update user config count in table users
+    """Update user config count in table users
     add 1 to current config count"""
     try:
         conn = pg.connect(**params)
@@ -46,18 +56,19 @@ def update_user_config_count(user_id: int) -> None:
             cursor.execute(
                 """--sql
                 UPDATE users SET config_count = config_count + 1 WHERE user_id = %s
-                """, (user_id,))
+                """,
+                (user_id,),
+            )
 
             conn.commit()
-            logger.info(
-                f'[+] user {user_id} config count updated to {cursor.rowcount}')
+            logger.info(f"[+] user {user_id} config count updated to {cursor.rowcount}")
     except (Exception, pg.DatabaseError) as error:
-        logger.error(f'[-] {error}')
+        logger.error(f"[-] {error}")
         return None
 
 
 def update_given_subscription_time(user_id: int, days: int) -> None:
-    """ Update user payment end date in table users
+    """Update user payment end date in table users
     add given days to date in table if user have not expired subscription now
     else add given days to current date"""
     try:
@@ -69,8 +80,15 @@ def update_given_subscription_time(user_id: int, days: int) -> None:
                 WHEN subscription_end_date < %s THEN %s + %s
                 ELSE subscription_end_date + %s END
                 WHERE user_id = %s
-                """, (datetime.now(), datetime.now(),
-                      timedelta(days=days), timedelta(days=days), user_id))
+                """,
+                (
+                    datetime.now(),
+                    datetime.now(),
+                    timedelta(days=days),
+                    timedelta(days=days),
+                    user_id,
+                ),
+            )
 
             conn.commit()
 
@@ -78,18 +96,21 @@ def update_given_subscription_time(user_id: int, days: int) -> None:
             cursor.execute(
                 """--sql
                 SELECT username FROM users WHERE user_id = %s
-                """, (user_id,))
+                """,
+                (user_id,),
+            )
             username = cursor.fetchone()[0]
 
             logger.info(
-                f'[+] user {user_id}::{username} payment updated [BY ADMIN]; added: {days} days')
+                f"[+] user {user_id}::{username} payment updated [BY ADMIN]; added: {days} days"
+            )
     except (Exception, pg.DatabaseError) as error:
-        logger.error(f'[-] {error}')
+        logger.error(f"[-] {error}")
         return None
 
 
 def set_user_enddate_to_n(user_id: int, days: int) -> None:
-    """ Update user payment end date in table users
+    """Update user payment end date in table users
     set date to datetime.now() + N days"""
     try:
         conn = pg.connect(**params)
@@ -97,7 +118,9 @@ def set_user_enddate_to_n(user_id: int, days: int) -> None:
             cursor.execute(
                 """--sql
                 UPDATE users SET subscription_end_date = %s WHERE user_id = %s
-                """, (datetime.now() + timedelta(days=days), user_id))
+                """,
+                (datetime.now() + timedelta(days=days), user_id),
+            )
 
             conn.commit()
 
@@ -105,12 +128,15 @@ def set_user_enddate_to_n(user_id: int, days: int) -> None:
             cursor.execute(
                 """--sql
                 SELECT username FROM users WHERE user_id = %s
-                """, (user_id,))
+                """,
+                (user_id,),
+            )
             username = cursor.fetchone()[0]
 
             logger.info(
-                f'''[+] user {user_id}::{username} payment updated [BY ADMIN]; set to:
-                {datetime.now() + timedelta(days=days)}''')
+                f"""[+] user {user_id}::{username} payment updated [BY ADMIN]; set to:
+                {datetime.now() + timedelta(days=days)}"""
+            )
     except (Exception, pg.DatabaseError) as error:
-        logger.error(f'[-] {error}')
+        logger.error(f"[-] {error}")
         return None

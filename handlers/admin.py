@@ -16,7 +16,10 @@ def is_admin(func):
         if message.from_user.id in config.ADMINS:
             await func(message, state)
         else:
-            await message.answer("You don't have permission to use this command.\n\Write to @pheezz for more info.")
+            await message.answer(
+                "You don't have permission to use this command.\n\Write to @pheezz for more info."
+            )
+
     return wrapped
 
 
@@ -24,8 +27,9 @@ def is_admin(func):
 @is_admin
 # function for getting info about message in pretty format
 async def cmd_info(message: types.Message, state: FSMContext) -> types.Message | str:
-    await message.answer(f'<pre>{pformat(message.to_python())}</pre>',
-                         parse_mode='HTML')
+    await message.answer(
+        f"<pre>{pformat(message.to_python())}</pre>", parse_mode="HTML"
+    )
 
 
 @rate_limit(limit=3)
@@ -36,20 +40,23 @@ async def statistic_endtime(message: types.Message, state: FSMContext):
     # sort by enddate high to low
     users.sort(key=lambda x: x[1], reverse=True)
 
-    if 'active' in args:
+    if "active" in args:
         users = [user for user in users if user[1] >= datetime.now()]
 
-    elif ('inactive' in args) or ('notactive' in args) or ('expired' in args):
+    elif ("inactive" in args) or ("notactive" in args) or ("expired" in args):
         users = [user for user in users if user[1] < datetime.now()]
 
-    pretty_string = ''.join(
-        [f'{user[0]} - {user[1].strftime("%d-%m-%Y")}\n' for user in users])
-    await message.answer(f'<pre>{pretty_string}</pre>', parse_mode='HTML')
+    pretty_string = "".join(
+        [f'{user[0]} - {user[1].strftime("%d-%m-%Y")}\n' for user in users]
+    )
+    await message.answer(f"<pre>{pretty_string}</pre>", parse_mode="HTML")
 
 
 @rate_limit(limit=3)
 @is_admin
-async def give_subscription_time(message: types.Message, state: FSMContext) -> types.Message:
+async def give_subscription_time(
+    message: types.Message, state: FSMContext
+) -> types.Message:
     # /give pheezz 30
     # or /give 123456789 30
 
@@ -61,21 +68,24 @@ async def give_subscription_time(message: types.Message, state: FSMContext) -> t
         user_id = database.selector.get_user_id(username)
 
     try:
-        database.update.update_given_subscription_time(
-            user_id=user_id, days=int(days))
+        database.update.update_given_subscription_time(user_id=user_id, days=int(days))
     except Exception as e:
-        await message.answer(f'Error: {e}')
+        await message.answer(f"Error: {e}")
     else:
         vpn_config.reconnect_payed_user(user_id=user_id)
         await bot.send_message(
-            user_id, f'Поздравляем! Администратор продлил вашу подписку на {days} дней!',
-            reply_markup=await kb.payed_user_kb())
-        await message.answer(f'''Пользователю {user_id} продлена подписка на {days} дней
-теперь она актуальна до: {database.selector.get_subscription_end_date(user_id)}''')
+            user_id,
+            f"Поздравляем! Администратор продлил вашу подписку на {days} дней!",
+            reply_markup=await kb.payed_user_kb(),
+        )
+        await message.answer(
+            f"""Пользователю {user_id} продлена подписка на {days} дней
+теперь она актуальна до: {database.selector.get_subscription_end_date(user_id)}"""
+        )
 
 
 @rate_limit(limit=3)
 @is_admin
 async def restart_wg_service_admin(message: types.Message, state: FSMContext):
     vpn_config.restart_wg_service()
-    await message.answer('Сервис WireGuard перезапущен')
+    await message.answer("Сервис WireGuard перезапущен")

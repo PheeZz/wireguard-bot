@@ -4,7 +4,7 @@ from data.config import db_connection_parameters as params
 
 
 def create_table_user() -> None:
-    """ Create table user in database wireguard_bot
+    """Create table user in database wireguard_bot
     Default value for subscription_end_date is 999 days ago
     """
     try:
@@ -25,11 +25,11 @@ def create_table_user() -> None:
             conn.commit()
             logger.success("[+] Table user created successfully")
     except (Exception, pg.DatabaseError) as error:
-        logger.error(f'[-] {error}')
+        logger.error(f"[-] {error}")
 
 
 def create_table_payment() -> None:
-    """ Create table payment in database wireguard_bot"""
+    """Create table payment in database wireguard_bot"""
     try:
         conn = pg.connect(**params)
 
@@ -48,11 +48,11 @@ def create_table_payment() -> None:
             conn.commit()
             logger.success("[+] Table payment created successfully")
     except (Exception, pg.DatabaseError) as error:
-        logger.error(f'[-] {error}')
+        logger.error(f"[-] {error}")
 
 
 def create_table_vpn_config() -> None:
-    """ Create table vpn_config in database wireguard_bot"""
+    """Create table vpn_config in database wireguard_bot"""
     try:
         conn = pg.connect(**params)
 
@@ -70,7 +70,7 @@ def create_table_vpn_config() -> None:
             conn.commit()
             logger.success("[+] Table vpn_config created successfully")
     except (Exception, pg.DatabaseError) as error:
-        logger.error(f'[-] {error}')
+        logger.error(f"[-] {error}")
 
 
 if __name__ == "__main__":

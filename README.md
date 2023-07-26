@@ -174,7 +174,5 @@ pip-review --local --auto
 
 ## TODO
 
-1. Migrate from pip to poetry.
-2. Refactor code in utils/Watchdog.py
-3. Simplify installation.
-4. Maybe add docker-file.
+1. Simplify installation.
+2. Maybe add docker-file.

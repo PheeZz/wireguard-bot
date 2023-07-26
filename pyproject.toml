@@ -40,6 +40,7 @@ tzlocal = "4.2"
 win32-setctime = "1.1.0"
 yarl = "1.8.2"
 pip = "^23.2.1"
+black = "^23.7.0"
 
 
 [build-system]

@@ -27,6 +27,7 @@ QR code generator: qrencode<br/>
 3. You need to create a bot using [BotFather](https://t.me/BotFather).
 4. You need to install [PostgreSQL](https://www.postgresql.org/download/).
 5. You need to configure <b>AT LEAST ONE PEER</b> in your Wireguard config file.
+6. You need to have poetry installed on your system. You can find installation guide [here](https://python-poetry.org/docs/#installation).
 
 ## Setup
 
@@ -36,29 +37,16 @@ QR code generator: qrencode<br/>
    git clone https://github.com/PheeZz/wireguard-bot.git && cd wireguard-bot
    ```
 
-2. Setup your virtualenv<br/>
+2. Create your virtualenv inside project dir<br/>
 
    ```bash
-   python3.10 -m venv .venv
+   poetry shell
    ```
-
-3. Next step activate it<br/>
-
-- On linux systems:<br/>
-
-  ```bash
-  source .venv/bin/activate
-  ```
-
-- On Windows:<br/>
-  ```cmd
-  .venv\Scripts\activate
-  ```
 
 3. Download required libs<br/>
 
    ```bash
-   pip install -r requirements.txt
+   poetry install
    ```
 
 4. Create your database<br/>
@@ -185,7 +173,8 @@ pip-review --local --auto
 ```
 
 ## TODO
+
 1. Migrate from pip to poetry.
 2. Refactor code in utils/Watchdog.py
 3. Simplify installation.
-4. Maybe add docker-file. 
+4. Maybe add docker-file.

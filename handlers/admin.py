@@ -55,7 +55,10 @@ async def statistic_endtime(message: types.Message, state: FSMContext):
     if len(pretty_string) > 4096:
         io_string = BytesIO(pretty_string.encode("utf-8"))
         await message.answer_document(
-            io_string, caption=f"users_{datetime.now().strftime('%d-%m-%Y')}.txt"
+            types.InputFile(
+                io_string,
+                filename=f"statistic_endtime_{datetime.now().strftime('%d-%m-%Y')}.txt",
+            )
         )
     elif len(pretty_string) != 0:
         await message.answer(pretty_string, parse_mode=types.ParseMode.HTML)

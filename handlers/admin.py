@@ -71,6 +71,11 @@ async def give_subscription_time(
         database.update.update_given_subscription_time(user_id=user_id, days=int(days))
         if database.selector.is_subscription_expired(user_id):
             vpn_config.disconnect_peer(user_id)
+            await bot.send_message(
+                user_id,
+                "Ваша подписка истекла.",
+                reply_markup=await kb.free_user_kb(),
+            )
     except Exception as e:
         await message.answer(f"Error: {e}")
     else:

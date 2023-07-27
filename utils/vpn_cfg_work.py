@@ -113,16 +113,18 @@ class wireguard_config:
 
         return new_adress
 
-    def add_new_peer(self, username: str, peer_public_key: str) -> None:
+    def add_new_peer(self, username_and_device: str, peer_public_key: str) -> None:
         """adds new peer to config file"""
         try:
             with open(self.cfg_path, "a") as cfg:
                 cfg.write(
-                    f"#{username}\n[Peer]\nPublicKey = {peer_public_key}"
-                    f"PresharedKey = {self.server_preshared_key}"
-                    f"AllowedIPs = {self.add_byte_to_adress(username)}/32\n\n"
+                    f"#{username_and_device}\n"
+                    f"[Peer]\n"
+                    f"PublicKey = {peer_public_key}\n"
+                    f"PresharedKey = {self.server_preshared_key}\n"
+                    f"AllowedIPs = {self.add_byte_to_adress(username_and_device)}/32\n\n"
                 )
-                logger.info(f"[+] new peer {username} added")
+                logger.info(f"[+] new peer {username_and_device} added")
         except Exception as e:
             logger.error(f"[-] {e}")
 
@@ -156,15 +158,15 @@ class wireguard_config:
     def create_peer_config(self, peer_private_key: str) -> str:
         """creates config for client and returns it as string"""
         cfg = (
-            f"[Interface]"
-            f"PrivateKey = {peer_private_key}"
-            f"Address = {self.last_peer_adress}"
-            f"DNS = 8.8.8.8\n"
-            f"[Peer]"
-            f"PublicKey = {self.server_public_key}"
-            f"PresharedKey = {self.server_preshared_key}"
+            f"[Interface]\n"
+            f"PrivateKey = {peer_private_key}\n"
+            f"Address = {self.last_peer_adress}\n"
+            f"DNS = 8.8.8.8\n\n"
+            f"[Peer]\n"
+            f"PublicKey = {self.server_public_key}\n"
+            f"PresharedKey = {self.server_preshared_key}\n"
             f"AllowedIPs = 0.0.0.0/0"
-            f"Endpoint = {self.server_ip}:{self.server_port}"
+            f"Endpoint = {self.server_ip}:{self.server_port}\n"
             f"PersistentKeepalive = 20"
         )
         return cfg

@@ -5,7 +5,6 @@ description = ""
 authors = ["PheeZz <jagubkoff@gmail.com>"]
 license = "MIT"
 readme = "README.md"
-packages = [{include = "wireguard_bot"}]
 
 [tool.poetry.dependencies]
 python = "^3.10.5"

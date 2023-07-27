@@ -4,9 +4,9 @@ from aiogram.types import ContentType
 
 # DON'T TOUCH THIS IMPORT
 from loader import dp
+from aiogram import Dispatcher
 
-
-def setup(dp):
+def setup(dp:Dispatcher):
     """setup handlers for users and moders in one place and add throttling in 5 seconds
 
     Args:
@@ -18,10 +18,6 @@ def setup(dp):
 
     dp.register_message_handler(
         cmd_pay, lambda message: message.text.startswith("💵"), state=None
-    )
-
-    dp.register_pre_checkout_query_handler(
-        pre_checkout_query_handler, lambda query: True
     )
 
     dp.register_message_handler(

@@ -1,28 +1,34 @@
 from loguru import logger
 from os import remove
-
+from io import BytesIO
 from aiogram import types
 from aiogram.dispatcher import FSMContext
+from aiogram.utils.markdown import hcode
 
 from middlewares import rate_limit
 import keyboards as kb
 
 import database
 from loader import bot
-from data.config import PAYMENTS_TOKEN, ADMINS, PAYMENT_CARD
+from data.config import (
+    ADMINS,
+    PAYMENT_CARD,
+    CONFIGS_PREFIX,
+    BASE_SUBSCRIPTION_MONTHLY_PRICE_RUBLES,
+)
 from loader import vpn_config
 
 from utils.fsm import NewConfig, NewPayment
-import os
+from utils.qr_code import create_qr_code_from_peer_data
 
 
 @rate_limit(limit=5)
 async def cmd_start(message: types.Message) -> types.Message:
     if not message.from_user.username:
         await message.answer(
-            f"""Привет, {message.from_user.full_name}!\nУ тебя не установлен username, установи его в настройках телеграма и напиши /start\n\
-Если не знаешь как это сделать - посмотри [справку](https://silverweb.by/kak-sozdat-nik-v-telegramm/)""",
-            parse_mode="Markdown",
+            f"Привет, {message.from_user.full_name}!\nУ тебя не установлен username, установи его в настройках телеграма и напиши /start\n"
+            "Если не знаешь как это сделать - посмотри [справку](https://silverweb.by/kak-sozdat-nik-v-telegramm/)",
+            parse_mode=types.ParseMode.MARKDOWN,
         )
         return
     if database.selector.is_exist_user(message.from_user.id):
@@ -45,7 +51,7 @@ async def cmd_start(message: types.Message) -> types.Message:
     await bot.send_message(
         message.from_user.id,
         "Подробное описание бота и его функционала доступно на [странице](https://telegra.ph/FAQ-po-botu-01-08), оплачивая подписку, вы соглашаетесь с правилами использования бота и условиями возврата средств, указанными в статье выше.",
-        parse_mode="Markdown",
+        parse_mode=types.ParseMode.MARKDOWN,
     )
     database.insert_new_user(message)
 
@@ -54,8 +60,9 @@ async def cmd_start(message: types.Message) -> types.Message:
         # format: Новый пользователь: Имя (id: id), username, id like code format in markdown
         await bot.send_message(
             admin,
-            f"Новый пользователь: {message.from_user.full_name} (id: `{message.from_user.id}`), `{message.from_user.username}`",
-            parse_mode="markdown",
+            f"Новый пользователь: {hcode('message.from_user.full_name')}\n"
+            f"id: {hcode('message.from_user.id')}, {hcode('message.from_user.username')}",
+            parse_mode=types.ParseMode.HTML,
         )
 
 
@@ -65,9 +72,10 @@ async def cmd_pay(message: types.Message, state: FSMContext) -> types.Message:
     await NewPayment.payment_image.set()
     await bot.send_message(
         message.from_user.id,
-        f"В данный момент нет возможности совершить платеж в боте. \
-Для оплаты подписки переведите 100₽ на карту `{PAYMENT_CARD}` и отправьте скриншот чека/операции в ответ на это сообщение.",
-        parse_mode="Markdown",
+        "В данный момент нет возможности совершить платеж в боте."
+        f"Для оплаты подписки переведите {BASE_SUBSCRIPTION_MONTHLY_PRICE_RUBLES}₽ на карту {hcode(PAYMENT_CARD)} "
+        "и отправьте скриншот чека/операции в ответ на это сообщение.",
+        parse_mode=types.ParseMode.HTML,
         reply_markup=await kb.cancel_payment_kb(),
     )
 
@@ -85,23 +93,20 @@ async def got_payment_screenshot(message: types.Message, state: FSMContext):
     # forwards screenshot to admin
     for admin in ADMINS:
         await message.forward(admin)
+        give_help_command = f"/give {message.from_user.id} 30"
         await bot.send_message(
             admin,
-            f"Пользователь {message.from_user.full_name} (id: `{message.from_user.id}`, username: `{message.from_user.username}`) оплатил подписку на VPN.\n\nПроверьте оплату и активируйте VPN для пользователя.",
-            parse_mode="markdown",
+            f"Пользователь {message.from_user.full_name}\n"
+            f"id: {hcode(message.from_user.id)}, username: {hcode(message.from_user.username)} оплатил подписку на VPN.\n\n"
+            "Проверьте оплату и активируйте VPN для пользователя.\n"
+            f"{hcode(give_help_command)}",
+            parse_mode=types.ParseMode.HTML,
         )
 
 
 async def cancel_payment(query: types.CallbackQuery, state: FSMContext):
     await state.finish()
     await query.message.edit_text("Оплата отменена.", reply_markup=None)
-
-
-# pre checkout query
-
-
-async def pre_checkout_query_handler(query: types.PreCheckoutQuery):
-    await bot.answer_pre_checkout_query(query.id, ok=True)
 
 
 # successful payment
@@ -181,32 +186,25 @@ async def device_selected(call: types.CallbackQuery, state=FSMContext):
         config=user_config,
     )
 
-    with open(f"data/temp/TURKEY_{call.from_user.username}_{device}.conf", "w") as f:
-        f.write(user_config)
+    io_config_file = BytesIO(user_config.encode("utf-8"))
+    filename = f"{CONFIGS_PREFIX}_{call.from_user.username}_{device}.conf"
 
     # send config file
     await call.message.answer_document(
-        types.InputFile(f"data/temp/TURKEY_{call.from_user.username}_{device}.conf"),
+        types.InputFile(
+            io_config_file,
+            filename=filename,
+        ),
         reply_markup=await kb.configs_kb(call.from_user.id),
     )
 
     if device == "PHONE":
-        # send qr code (create qr code from config by qrencode)
-        os.system(
-            f"qrencode -o data/temp/TURKEY_{call.from_user.username}.png -s 10 -l H -m 2 < data/temp/TURKEY_{call.from_user.username}_{device}.conf"
-        )
+        config_qr_code = create_qr_code_from_peer_data(user_config)
         await call.message.answer_photo(
-            types.InputFile(f"data/temp/TURKEY_{call.from_user.username}.png"),
-        )
-
-    # delete temp files
-    try:
-        remove(f"data/temp/TURKEY_{call.from_user.username}.conf")
-        if device == "PHONE":
-            remove(f"data/temp/TURKEY_{call.from_user.username}.png")
-    except OSError as error:
-        logger.error(
-            f"Error while deleting temp files for user {call.from_user.username}; Error: {error}"
+            types.InputFile(
+                config_qr_code,
+                filename=f"{CONFIGS_PREFIX}_{call.from_user.username}.png",
+            ),
         )
 
 
@@ -226,57 +224,26 @@ async def cmd_show_config(message: types.Message, state=FSMContext):
         user_id=message.from_user.id,
         config_name=f"{message.from_user.username}_{device}",
     )
+    filename = f"{CONFIGS_PREFIX}_{message.from_user.username}_{device}.conf"
+    io_config_file = BytesIO(config.encode("utf-8"))
 
-    if device == "PC":
-        with open(
-            f"data/temp/TURKEY_{message.from_user.username}_{device}.conf", "w"
-        ) as f:
-            f.write(config)
+    # send config file
+    await message.answer_document(
+        types.InputFile(
+            io_config_file,
+            filename=filename,
+        ),
+    )
 
-        # send config file
-        await message.answer_document(
-            types.InputFile(
-                f"data/temp/TURKEY_{message.from_user.username}_{device}.conf"
-            ),
-        )
-
-        # delete temp files
-        try:
-            remove(f"data/temp/TURKEY_{message.from_user.username}_{device}.conf")
-        except OSError as error:
-            logger.error(
-                f"Error while deleting temp files for user {message.from_user.username}; Error: {error}"
-            )
-
-    elif device == "PHONE":
-        with open(
-            f"data/temp/TURKEY_{message.from_user.username}_{device}.conf", "w"
-        ) as f:
-            f.write(config)
-
-        # send config file
-        await message.answer_document(
-            types.InputFile(
-                f"data/temp/TURKEY_{message.from_user.username}_{device}.conf"
-            ),
-        )
-
-        # send qr code (create qr code from config by qrencode)
-        os.system(
-            f"qrencode -o data/temp/TURKEY_{message.from_user.username}.png -s 10 -l H -m 2 < data/temp/TURKEY_{message.from_user.username}_{device}.conf"
-        )
+    if device == "PHONE":
+        image_filename = f"{CONFIGS_PREFIX}_{message.from_user.username}.png"
+        config_qr_code = create_qr_code_from_peer_data(config)
         await message.answer_photo(
-            types.InputFile(f"data/temp/TURKEY_{message.from_user.username}.png"),
+            types.InputFile(
+                config_qr_code,
+                filename=image_filename,
+            ),
         )
-
-        # delete temp files
-        try:
-            remove(f"data/temp/TURKEY_{message.from_user.username}_{device}.conf")
-            remove(f"data/temp/TURKEY_{message.from_user.username}.png")
-        except OSError as error:
-            logger.error(
-                f"Error while deleting temp files for user {message.from_user.username}; Error: {error}"
-            )
 
 
 @rate_limit(limit=5)
@@ -285,13 +252,13 @@ async def cmd_support(message: types.Message):
     # place link inside 'странице'and parse it in markdown
     await message.answer(
         "Подробное описание бота и его функционала доступно на [странице](https://telegra.ph/FAQ-po-botu-01-08)",
-        parse_mode="Markdown",
+        parse_mode=types.ParseMode.MARKDOWN,
     )
 
     # answer with username info @pheezz as markdown
     await message.answer(
         "Если у тебя все еще остались вопросы, то ты можешь написать [мне](t.me/pheezz) лично",
-        parse_mode="Markdown",
+        parse_mode=types.ParseMode.MARKDOWN,
     )
 
 
@@ -299,16 +266,16 @@ async def cmd_support(message: types.Message):
 async def cmd_show_end_time(message: types.Message):
     # show user end time
     await message.answer(
-        f"""{message.from_user.full_name or message.from_user.username},
-твой доступ к VPN закончится {database.selector.get_subscription_end_date(message.from_user.id)}"""
+        f"{message.from_user.full_name or message.from_user.username},"
+        f"твой доступ к VPN закончится {database.selector.get_subscription_end_date(message.from_user.id)}"
     )
 
 
 @rate_limit(limit=2)
 async def cmd_show_subscription(message: types.Message):
     await message.answer(
-        f"""{message.from_user.full_name or message.from_user.username},
-здесь ты можешь распорядиться своей подпиской""",
+        f"{message.from_user.full_name or message.from_user.username},"
+        "здесь ты можешь распорядиться своей подпиской",
         reply_markup=await kb.subscription_management_kb(),
     )
 

@@ -5,8 +5,12 @@ load_dotenv(override=True)
 
 BOT_TOKEN = os.getenv("WG_BOT_TOKEN")
 PAYMENTS_TOKEN = os.getenv("PAYMENTS_TOKEN")
-ADMINS = list(map(int, os.getenv("ADMINS_IDS").split(",")))
+ADMINS: list[int] = list(map(int, os.getenv("ADMINS_IDS").split(",")))
 PAYMENT_CARD = os.getenv("PAYMENT_CARD")
+CONFIGS_PREFIX = os.getenv("CONFIGS_PREFIX")
+BASE_SUBSCRIPTION_MONTHLY_PRICE_RUBLES = int(
+    os.getenv("BASE_SUBSCRIPTION_MONTHLY_PRICE_RUBLES")
+)
 
 db_connection_parameters = {
     "host": os.getenv("DB_HOST"),

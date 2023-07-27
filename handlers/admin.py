@@ -9,6 +9,8 @@ from middlewares import rate_limit
 
 from pprint import pformat
 from datetime import datetime
+from aiogram.utils.markdown import hcode, hbold, hpre
+from io import BytesIO
 
 
 def is_admin(func):
@@ -28,7 +30,7 @@ def is_admin(func):
 # function for getting info about message in pretty format
 async def cmd_info(message: types.Message, state: FSMContext) -> types.Message | str:
     await message.answer(
-        f"<pre>{pformat(message.to_python())}</pre>", parse_mode="HTML"
+        f"{hpre(pformat(message.to_python()))}", parse_mode=types.ParseMode.HTML
     )
 
 
@@ -46,10 +48,20 @@ async def statistic_endtime(message: types.Message, state: FSMContext):
     elif ("inactive" in args) or ("notactive" in args) or ("expired" in args):
         users = [user for user in users if user[1] < datetime.now()]
 
-    pretty_string = "".join(
+    pretty_string = f"{hcode('username')} - {hbold('enddate')}\n\n" + "".join(
         [f'{user[0]} - {user[1].strftime("%d-%m-%Y")}\n' for user in users]
     )
-    await message.answer(f"<pre>{pretty_string}</pre>", parse_mode="HTML")
+
+    if len(pretty_string) > 4096:
+        io_string = BytesIO(pretty_string.encode("utf-8"))
+        await message.answer_document(
+            io_string, caption=f"users_{datetime.now().strftime('%d-%m-%Y')}.txt"
+        )
+    elif len(pretty_string) != 0:
+        await message.answer(pretty_string, parse_mode=types.ParseMode.HTML)
+
+    else:
+        await message.answer("No users found")
 
 
 @rate_limit(limit=3)
@@ -59,6 +71,13 @@ async def give_subscription_time(
 ) -> types.Message:
     # /give pheezz 30
     # or /give 123456789 30
+    if len(message.text.split()) != 3:
+        message.answer(
+            f"Неверный формат команды\n"
+            f"{hcode('/give username days')}\n"
+            f"{hcode('/give user_id days')}"
+        )
+        return
 
     if message.text.split()[1].isdigit():
         user_id = int(message.text.split()[1])
@@ -69,26 +88,33 @@ async def give_subscription_time(
 
     try:
         database.update.update_given_subscription_time(user_id=user_id, days=int(days))
-        if database.selector.is_subscription_expired(user_id):
+        is_subscription_expired = database.selector.is_subscription_expired(user_id)
+        if is_subscription_expired:
             vpn_config.disconnect_peer(user_id)
             await bot.send_message(
                 user_id,
                 "Ваша подписка истекла.",
-                reply_markup=await kb.free_user_kb(),
+                reply_markup=await kb.free_user_kb(user_id=user_id),
             )
     except Exception as e:
-        await message.answer(f"Error: {e}")
+        await message.answer(f"Error: {e.__repr__()}")
     else:
         vpn_config.reconnect_payed_user(user_id=user_id)
         await bot.send_message(
             user_id,
-            f"Поздравляем! Администратор продлил вашу подписку на {days} дней!",
-            reply_markup=await kb.payed_user_kb(),
+            f"Поздравляем! Администратор продлил вашу подписку на {hbold(days)} дней!",
+            reply_markup=await kb.payed_user_kb()
+            if not is_subscription_expired
+            else await kb.free_user_kb(user_id=user_id),
+            parse_mode=types.ParseMode.HTML,
         )
-        await message.answer(
-            f"""Пользователю {user_id} продлена подписка на {days} дней
-теперь она актуальна до: {database.selector.get_subscription_end_date(user_id)}"""
-        )
+        for admin in config.ADMINS:
+            await bot.send_message(
+                chat_id=admin,
+                text=f"Пользователю {hcode(user_id)} продлена подписка на {hbold(days)} дней.\n"
+                f"Теперь она актуальна до: {hbold(database.selector.get_subscription_end_date(user_id))}",
+                parse_mode=types.ParseMode.HTML,
+            )
 
 
 @rate_limit(limit=3)

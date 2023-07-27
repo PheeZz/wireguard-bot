@@ -5,7 +5,7 @@ import subprocess
 from ipaddress import IPv4Address
 
 
-class wireguard_config:
+class WireguardConfig:
     # TODO: move it to config.py or extra module with server_cfg and client_cfg classes
     def __init__(self):
         self.cfg_path = getenv("WG_CFG_PATH")
@@ -99,7 +99,7 @@ class wireguard_config:
             # delete 'AllowedIPs = ' and '/32' from string
             return last_peer_adress[13:-3]
         except Exception as e:
-            logger.error(f"[-] {e}")
+            logger.error(f"[-] {e.__repr__()}")
 
     def add_byte_to_adress(self, username: str) -> str | None:
         """adds 1 byte to adress"""

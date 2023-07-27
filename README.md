@@ -87,12 +87,14 @@ QR code generator: qrencode<br/>
    WG_SERVER_PRESHARED_KEY= <str>
    #path to wireguard config file, default /etc/wireguard/wg0.conf
    WG_CFG_PATH = '/etc/wireguard/wg0.conf'
-   #token for telegram invoice payments, if you don't use payments, just leave it empty
+   #token for telegram invoice payments, if you don't use payments, just leave it empty (NOW IT'S NOT WORKING)
    PAYMENTS_TOKEN = <str>
    #your telegram id, you can get it from @userinfobot or @myidbot or @RawDataBot
    ADMINS_IDS = <str>
    #your bank card number, if you will use payments with "handmade" method
    PAYMENT_CARD = <str>
+   #any text you want to show in the start of every peer config file (for example in case MYVPN_pheezz_PC.conf - "MYVPN" is prefix)
+   CONFIGS_PREFIX = <str>
 
    #name of your database
    DATABASE = <str>
@@ -119,13 +121,7 @@ QR code generator: qrencode<br/>
    rm create.py
    ```
 
-7. Install <b>qrencode</b> package for generating QR code for mobile configs
-
-   ```bash
-   sudo apt install qrencode
-   ```
-
-8. Create .service file for your bot</br>
+7. Create .service file for your bot</br>
    Path: `/etc/systemd/system/wireguard-bot.service` </br>
    Code: (if you using python 3.10)</br>
 
@@ -144,14 +140,14 @@ QR code generator: qrencode<br/>
     WantedBy=multi-user.target
    ```
 
-9. Enable service and start it</br>
+8. Enable service and start it</br>
 
    ```bash
    systemctl enable wireguard-bot.service
    systemctl start wireguard-bot.service
    ```
 
-10. Finally, you can use your bot and enjoy it ❤️
+9. Finally, you can use your bot and enjoy it ❤️
 
 ## Extra
 
@@ -167,7 +163,6 @@ QR code generator: qrencode<br/>
    `/stats inactive` - show inactive users.<br/>
    `/stats` without options will show all users.<br/>
    `/wgrestart` - restart wireguard service
-
 
 ## TODO
 

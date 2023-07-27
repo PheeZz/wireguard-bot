@@ -28,29 +28,6 @@ def create_table_user() -> None:
         logger.error(f"[-] {error}")
 
 
-def create_table_payment() -> None:
-    """Create table payment in database wireguard_bot"""
-    try:
-        conn = pg.connect(**params)
-
-        with conn.cursor() as cursor:
-            cursor.execute(
-                """--sql
-                CREATE TABLE IF NOT EXISTS payment(
-                id SERIAL PRIMARY KEY,
-                user_id BIGINT,
-                amount INT,
-                date TIMESTAMP,
-                FOREIGN KEY(user_id) REFERENCES users(user_id)
-                )
-                """
-            )
-            conn.commit()
-            logger.success("[+] Table payment created successfully")
-    except (Exception, pg.DatabaseError) as error:
-        logger.error(f"[-] {error}")
-
-
 def create_table_vpn_config() -> None:
     """Create table vpn_config in database wireguard_bot"""
     try:
@@ -75,5 +52,4 @@ def create_table_vpn_config() -> None:
 
 if __name__ == "__main__":
     create_table_user()
-    create_table_payment()
     create_table_vpn_config()

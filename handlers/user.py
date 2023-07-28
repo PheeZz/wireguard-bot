@@ -266,7 +266,7 @@ async def cmd_support(message: types.Message):
 async def cmd_show_end_time(message: types.Message):
     # show user end time
     await message.answer(
-        f"{message.from_user.full_name or message.from_user.username},"
+        f"{message.from_user.full_name or message.from_user.username}, "
         f"твой доступ к VPN закончится {database.selector.get_subscription_end_date(message.from_user.id)}"
     )
 
@@ -274,7 +274,7 @@ async def cmd_show_end_time(message: types.Message):
 @rate_limit(limit=2)
 async def cmd_show_subscription(message: types.Message):
     await message.answer(
-        f"{message.from_user.full_name or message.from_user.username},"
+        f"{message.from_user.full_name or message.from_user.username}, "
         "здесь ты можешь распорядиться своей подпиской",
         reply_markup=await kb.subscription_management_kb(),
     )

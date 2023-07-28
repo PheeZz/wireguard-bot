@@ -101,7 +101,8 @@ async def give_subscription_time(
     except Exception as e:
         await message.answer(f"Error: {e.__repr__()}")
     else:
-        vpn_config.reconnect_payed_user(user_id=user_id)
+        if not is_subscription_expired:
+            vpn_config.reconnect_payed_user(user_id=user_id)
         await bot.send_message(
             user_id,
             f"Поздравляем! Администратор продлил вашу подписку на {hbold(days)} дней!",

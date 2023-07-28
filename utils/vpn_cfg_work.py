@@ -190,51 +190,33 @@ class WireguardConfig:
         return self.create_peer_config(user_priv_key)
 
     def disconnect_peer(self, user_id: int):
-        """disconnects peer by username
-        actually, it just comments all 3 lines under this username
-        """
+        """Disconnects peer by user ID."""
         username = database.selector.get_username_by_id(user_id)
 
-        try:
-            with open(self.cfg_path, "r") as cfg:
-                config = cfg.read()
-                for line in config.splitlines():
-                    if line.startswith(f"#{username}"):
-                        config = config.replace(
-                            f"{line}\n", f"#DISCONNECTED_{line[1:]}\n"
-                        )
+        self.comment_lines_under_username(username)
 
-            with open(self.cfg_path, "w") as cfg:
-                cfg.write(config)
+        # Restart wg-quick.
+        self.restart_service()
+        logger.info(f"[+] Peer {username} disconnected")
 
-            # comment 3 lines under username such as: Peer, PublicKey, AllowedIPs
-            with open(self.cfg_path, "r") as cfg:
-                config = cfg.read()
-                config_as_list = config.splitlines()
-                for line in config_as_list:
-                    if line.startswith(f"#DISCONNECTED_{username}"):
-                        # get index of line with username
-                        line_index = config.splitlines().index(line)
-                        # check if next line is #[Peer] then not comment it and
-                        # next 2 lines twice or more
-                        if not config_as_list[line_index + 1].startswith("#[Peer]"):
-                            for _ in range(3):
-                                line_index += 1
-                                config_as_list[
-                                    line_index
-                                ] = f"#{config_as_list[line_index]}"
-
-                config = "".join([f"{line}\n" for line in config_as_list])
-
-            with open(self.cfg_path, "w") as cfg:
-                cfg.write(config)
-
-            # restart wg-quick
-            self.restart_service()
-            logger.info(f"[+] peer {username} disconnected")
-
-        except Exception as e:
-            logger.error(f"[-] {e}")
+    def comment_lines_under_username(self, username: str):
+        """Comments the 3 lines under the given username."""
+        with open(self.cfg_path, "r+") as cfg:
+            config = cfg.readlines()
+            for line_index, line in enumerate(config):
+                if line.startswith(f"#{username}"):
+                    disconnected_username = f"DISCONNECTED_{line[1:]}"
+                    config[line_index] = f"#{disconnected_username}"
+                    for lines_under_username in range(line_index + 1, line_index + 4):
+                        if lines_under_username < len(config) and not config[
+                            lines_under_username
+                        ].startswith("#"):
+                            config[
+                                lines_under_username
+                            ] = f"#{config[lines_under_username]}"
+            cfg.seek(0)
+            cfg.write("".join(config))
+            cfg.truncate()
 
     def reconnect_payed_user(self, user_id: int):
         """reconnects payed user by user_id"""

@@ -60,7 +60,7 @@ async def statistic_endtime(message: types.Message, state: FSMContext):
                 filename=f"statistic_endtime_{datetime.now().strftime('%d-%m-%Y')}.txt",
             )
         )
-    elif len(pretty_string) != 0:
+    elif len(pretty_string) == 0:
         await message.answer(pretty_string, parse_mode=types.ParseMode.HTML)
 
         await message.answer("No users found")

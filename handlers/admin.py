@@ -123,5 +123,5 @@ async def give_subscription_time(
 @rate_limit(limit=3)
 @is_admin
 async def restart_wg_service_admin(message: types.Message, state: FSMContext):
-    vpn_config.restart_wg_service()
+    vpn_config.restart_service()
     await message.answer("Сервис WireGuard перезапущен")

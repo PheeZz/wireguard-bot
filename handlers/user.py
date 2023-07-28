@@ -61,7 +61,7 @@ async def cmd_start(message: types.Message) -> types.Message:
         await bot.send_message(
             admin,
             f"Новый пользователь: {hcode(message.from_user.full_name)}\n"
-            f"id: {hcode('message.from_user.id')}, {hcode(message.from_user.username)}",
+            f"id: {hcode(message.from_user.id)}, {hcode(message.from_user.username)}",
             parse_mode=types.ParseMode.HTML,
         )
 

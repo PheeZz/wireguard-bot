@@ -38,27 +38,28 @@ Database: postgresql<br/>
 
 ## Setup
 
-1. Clone this repo and go to project folder<br/>
+1. #### Clone this repo and go to project folder<br/>
 
    ```bash
    git clone https://github.com/PheeZz/wireguard-bot.git && cd wireguard-bot
    ```
 
-2. Create your virtualenv inside project dir<br/>
+2. #### Create your virtualenv inside project dir<br/>
 
    ```bash
    poetry shell
    ```
 
-   > REMEMBER path to your virtualenv, you will need it later
+   > REMEMBER path to your virtualenv, you will need it to start bot on [step 7](#Create-.service-file-for-your-bot)<br/>
+   > EXAMPLE: /home/user/.cache/pypoetry/virtualenvs/wireguard-bot-<some_hash>-py3.10
 
-3. Download required libs<br/>
+3. #### Download required libs<br/>
 
    ```bash
    poetry install
    ```
 
-4. Create your database<br/>
+4. #### Create your database<br/>
 
    ```bash
    sudo -u postgres psql
@@ -72,7 +73,7 @@ Database: postgresql<br/>
    \q
    ```
 
-5. Create .env file in data folder and fill it with your data. You can use following example as a template.<br/>
+5. #### Create .env file in data folder and fill it with your data. You can use following example as a template.<br/>
 
    ```bash
    cp data/.env.sample data/.env
@@ -115,7 +116,7 @@ Database: postgresql<br/>
    DB_PORT = '5432'
    ```
 
-6. Configure your database tables<br/>
+6. #### Configure your database tables<br/>
    Move create script from database/create.py to project root folder and run it
 
    ```bash
@@ -128,7 +129,8 @@ Database: postgresql<br/>
    rm create.py
    ```
 
-7. Create .service file for your bot</br>
+7. #### Create .service file for your bot</br>
+
    Path: `/etc/systemd/system/wireguard-bot.service` </br>
    Code: (if you using python 3.10)</br>
 
@@ -141,11 +143,13 @@ Database: postgresql<br/>
     Type=idle
     Restart=on-failure
     User=root
-    ExecStart=/bin/bash -c 'cd ~/wireguard-bot/ && source <path to venv from step 2> && python3.10 app.py'
+    ExecStart=/bin/bash -c 'cd ~/wireguard-bot/ && /home/user/.cache/pypoetry/virtualenvs/wireguard-bot-<some_hash>-py3.10/bin/python3.10 app.py'
 
     [Install]
     WantedBy=multi-user.target
    ```
+   > P.S. You can find path to your virtualenv on [step 2](#Create-your-virtualenv-inside-project-dir)<br/>
+   on line ExecStart you need to change path to your virtualenv and add `/bin/python3.10 app.py` to the end of virtualenv path<br/>
 
 8. Enable service and start it</br>
 
@@ -154,7 +158,7 @@ Database: postgresql<br/>
    systemctl start wireguard-bot.service
    ```
 
-9. Finally, you can use your bot and enjoy it ❤️
+9.  Finally, you can use your bot and enjoy it ❤️
 
 ## Extra
 

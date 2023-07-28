@@ -165,7 +165,7 @@ class WireguardConfig:
             f"[Peer]\n"
             f"PublicKey = {self.server_public_key}\n"
             f"PresharedKey = {self.server_preshared_key}\n"
-            f"AllowedIPs = 0.0.0.0/0"
+            f"AllowedIPs = 0.0.0.0/0\n"
             f"Endpoint = {self.server_ip}:{self.server_port}\n"
             f"PersistentKeepalive = 20"
         )

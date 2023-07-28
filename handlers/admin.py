@@ -63,7 +63,6 @@ async def statistic_endtime(message: types.Message, state: FSMContext):
     elif len(pretty_string) != 0:
         await message.answer(pretty_string, parse_mode=types.ParseMode.HTML)
 
-    else:
         await message.answer("No users found")
 
 

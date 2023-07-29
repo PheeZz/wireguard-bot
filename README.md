@@ -73,7 +73,7 @@ Database: postgresql<br/>
    \q
    ```
 
-5. #### Create .env file in data folder and fill it with your data. You can use following example as a template.<br/>
+5. #### Create .env file in data folder and fill it with your data. You can use following example as a template or use .env.sample file (it's the same)<br/>
 
    ```bash
    cp data/.env.sample data/.env
@@ -103,6 +103,8 @@ Database: postgresql<br/>
    PAYMENT_CARD = <str>
    #any text you want to show in the start of every peer config file (for example in case MYVPN_pheezz_PC.conf - "MYVPN" is prefix)
    CONFIGS_PREFIX = <str>
+   #how much subscription costs in rubles
+   BASE_SUBSCRIPTION_MONTHLY_PRICE_RUBLES = <int>
 
    #name of your database
    DATABASE = <str>

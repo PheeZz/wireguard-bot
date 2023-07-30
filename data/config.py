@@ -5,8 +5,8 @@ from loguru import logger
 
 class EnvVariableNotFound(Exception):
     def __init__(self, variable_name: str) -> None:
-        super().__init__(f"Environment variable {variable_name} not found")
-        logger.error(f"Environment variable {variable_name} not found")
+        super().__init__(f"Environment variable {variable_name} not found in .env file")
+        logger.error(f"Environment variable {variable_name} not found in .env file")
 
 
 class Config:

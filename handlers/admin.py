@@ -64,11 +64,15 @@ async def statistic_endtime(message: types.Message, state: FSMContext):
     # sort by enddate high to low
     users.sort(key=lambda x: x[1], reverse=True)
 
-    if "active" in args:
-        users = [user for user in users if user[1] >= datetime.now()]
+    if args:
+        users = filter_users_by_status(users, args[0])
 
-    elif ("inactive" in args) or ("notactive" in args) or ("expired" in args):
-        users = [user for user in users if user[1] < datetime.now()]
+    if not users:
+        await message.answer(
+            f"{hbold('Error: users with this status not found ')}",
+            parse_mode=types.ParseMode.HTML,
+        )
+        return
 
     pretty_string = "".join(
         [f'{user[0]} - {user[1].strftime("%d-%m-%Y")}\n' for user in users]
@@ -82,11 +86,20 @@ async def statistic_endtime(message: types.Message, state: FSMContext):
                 filename=f"statistic_endtime_{datetime.now().strftime('%d-%m-%Y')}.txt",
             )
         )
+
     else:
         await message.answer(
             f"{hcode('username')} - {hbold('enddate')}\n\n{pretty_string}",
             parse_mode=types.ParseMode.HTML,
         )
+
+
+def filter_users_by_status(users: list, status: str) -> list:
+    if status == "active":
+        return [user for user in users if user[1] >= datetime.now()]
+
+    elif status in ["inactive", "notactive", "expired"]:
+        return [user for user in users if user[1] < datetime.now()]
 
 
 @rate_limit(limit=3)

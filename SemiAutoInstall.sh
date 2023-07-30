@@ -14,16 +14,8 @@ sudo apt update && sudo apt upgrade -y
 sudo apt install -y git
 git clone https://github.com/PheeZz/wireguard-bot.git
 
-#install zsh, oh-my-zsh, and some plugins
+#install zsh, curl
 sudo apt install -y zsh curl
-sudo chsh -s $(which zsh) $(whoami)
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-sudo apt install -y fonts-powerline
-git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
-git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
-echo "plugins=(git zsh-syntax-highlighting\nzsh-autosuggestions\ngit\nfancy-ctrl-z\ncolored-man-pages\nsudo\ntmux\nzsh-autosuggestions\nzsh-syntax-highlighting)" >> ~/.zshrc
-#this is my favorite theme, but you can change it to whatever you want
-echo "ZSH_THEME=\"xiong-chiamiov\"" >> ~/.zshrc
 
 #install python3.10
 sudo apt install -y software-properties-common

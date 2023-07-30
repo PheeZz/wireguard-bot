@@ -121,7 +121,6 @@ EOF
 
 #install poetry and install dependencies
 sudo python3.10 -m pip install poetry
-poetry shell | head -n 1 | cut -d ' ' -f 5 > venv_path.txt
 poetry install
 
 #try to run create.py if it fails, then give db user superuser privileges
@@ -139,7 +138,7 @@ After=network.target
 [Service]
 Type=simple
 User=root
-ExecStart=/bin/bash -c 'cd /~/wireguard-bot && $(cat venv_path.txt)/bin/python3.10 main.py'
+ExecStart=/bin/bash -c 'cd ~/wireguard-bot/ && $(poetry env info --path)/bin/python3.10 app.py'
 
 [Install]
 WantedBy=multi-user.target

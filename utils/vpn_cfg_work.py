@@ -98,8 +98,11 @@ class WireguardConfig:
                     last_peer_adress = line
             # delete 'AllowedIPs = ' and '/32' from string
             return last_peer_adress[13:-3]
-        except Exception as e:
-            logger.error(f"[-] {e.__repr__()}")
+        except UnboundLocalError as e:
+            logger.error(
+                f"[-] String 'AllowedIPs' not found in config file. Returning default adress '10.0.0.2'. Error: {e.__repr__()}"
+            )
+            return "10.0.0.2"
 
     def add_byte_to_adress(self, username: str) -> str | None:
         """adds 1 byte to adress"""

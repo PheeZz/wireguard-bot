@@ -1,6 +1,7 @@
 import psycopg2 as pg
 from loguru import logger
-from data.config import db_connection_parameters as params
+from data import configuration
+
 
 
 def create_table_user() -> None:
@@ -8,7 +9,7 @@ def create_table_user() -> None:
     Default value for subscription_end_date is 999 days ago
     """
     try:
-        conn = pg.connect(**params)
+        conn = pg.connect(**configuration.db_connection_parameters)
         with conn.cursor() as cursor:
             cursor.execute(
                 """--sql
@@ -31,7 +32,7 @@ def create_table_user() -> None:
 def create_table_vpn_config() -> None:
     """Create table vpn_config in database wireguard_bot"""
     try:
-        conn = pg.connect(**params)
+        conn = pg.connect(**configuration.db_connection_parameters)
 
         with conn.cursor() as cursor:
             cursor.execute(

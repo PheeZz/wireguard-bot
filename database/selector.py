@@ -1,13 +1,13 @@
 import psycopg2 as pg
 from loguru import logger
-from data.config import db_connection_parameters as params
+from data import configuration
 from datetime import datetime, timedelta
 
 
 def is_exist_user(user_id: int) -> bool:
     """Check if user is exist in database"""
     try:
-        conn = pg.connect(**params)
+        conn = pg.connect(**configuration.db_connection_parameters)
         with conn.cursor() as cursor:
             cursor.execute(
                 """--sql
@@ -25,7 +25,7 @@ def is_exist_user(user_id: int) -> bool:
 def is_user_have_config(user_id: int) -> bool:
     """Check if user have config in database"""
     try:
-        conn = pg.connect(**params)
+        conn = pg.connect(**configuration.db_connection_parameters)
         with conn.cursor() as cursor:
             cursor.execute(
                 """--sql
@@ -42,7 +42,7 @@ def is_user_have_config(user_id: int) -> bool:
 def all_user_configs(user_id: int) -> list[str] | bool:
     """Get all user configs"""
     try:
-        conn = pg.connect(**params)
+        conn = pg.connect(**configuration.db_connection_parameters)
         with conn.cursor() as cursor:
             cursor.execute(
                 """--sql
@@ -59,7 +59,7 @@ def all_user_configs(user_id: int) -> list[str] | bool:
 def is_subscription_end(user_id: int) -> bool:
     """Check if user subscription is end"""
     try:
-        conn = pg.connect(**params)
+        conn = pg.connect(**configuration.db_connection_parameters)
         with conn.cursor() as cursor:
             cursor.execute(
                 """--sql
@@ -77,7 +77,7 @@ def is_subscription_end(user_id: int) -> bool:
 def get_subscription_end_date(user_id: int) -> datetime | bool:
     """Get user subscription end date"""
     try:
-        conn = pg.connect(**params)
+        conn = pg.connect(**configuration.db_connection_parameters)
         with conn.cursor() as cursor:
             cursor.execute(
                 """--sql
@@ -95,7 +95,7 @@ def get_subscription_end_date(user_id: int) -> datetime | bool:
 def get_user_config(user_id: int, config_name: str) -> str | bool:
     """Get user config"""
     try:
-        conn = pg.connect(**params)
+        conn = pg.connect(**configuration.db_connection_parameters)
         with conn.cursor() as cursor:
             cursor.execute(
                 """--sql
@@ -112,7 +112,7 @@ def get_user_config(user_id: int, config_name: str) -> str | bool:
 def get_all_usernames_and_enddate() -> list | bool:
     """Get all usernames and subscription end date"""
     try:
-        conn = pg.connect(**params)
+        conn = pg.connect(**configuration.db_connection_parameters)
         with conn.cursor() as cursor:
             cursor.execute(
                 """--sql
@@ -128,7 +128,7 @@ def get_all_usernames_and_enddate() -> list | bool:
 def get_user_ids_and_enddate() -> list | bool:
     """Get all user_ids and subscription end date"""
     try:
-        conn = pg.connect(**params)
+        conn = pg.connect(**configuration.db_connection_parameters)
         with conn.cursor() as cursor:
             cursor.execute(
                 """--sql
@@ -144,7 +144,7 @@ def get_user_ids_and_enddate() -> list | bool:
 def get_user_id(username: str) -> int:
     """Get user id"""
     try:
-        conn = pg.connect(**params)
+        conn = pg.connect(**configuration.db_connection_parameters)
         with conn.cursor() as cursor:
             cursor.execute(
                 """--sql
@@ -161,7 +161,7 @@ def get_user_id(username: str) -> int:
 def get_all_user_ids() -> list[int] | bool:
     """Get all user ids"""
     try:
-        conn = pg.connect(**params)
+        conn = pg.connect(**configuration.db_connection_parameters)
         with conn.cursor() as cursor:
             cursor.execute(
                 """--sql
@@ -187,7 +187,7 @@ def get_user_ids_enddate_n_days(days: int) -> list[int] | bool:
             shift = timedelta(days=0)
 
     try:
-        conn = pg.connect(**params)
+        conn = pg.connect(**configuration.db_connection_parameters)
         with conn.cursor() as cursor:
             cursor.execute(
                 """--sql
@@ -204,7 +204,7 @@ def get_user_ids_enddate_n_days(days: int) -> list[int] | bool:
 def get_username_by_id(user_id: int) -> str | bool:
     """Get username by user id"""
     try:
-        conn = pg.connect(**params)
+        conn = pg.connect(**configuration.db_connection_parameters)
         with conn.cursor() as cursor:
             cursor.execute(
                 """--sql
@@ -221,7 +221,7 @@ def get_username_by_id(user_id: int) -> str | bool:
 def is_subscription_expired(user_id: int) -> bool:
     """Check if user subscription is expired"""
     try:
-        conn = pg.connect(**params)
+        conn = pg.connect(**configuration.db_connection_parameters)
         with conn.cursor() as cursor:
             cursor.execute(
                 """--sql

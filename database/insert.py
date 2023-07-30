@@ -1,6 +1,6 @@
 import psycopg2 as pg
 from loguru import logger
-from data.config import db_connection_parameters as params
+from data import configuration
 from aiogram.types import Message
 from datetime import datetime
 
@@ -8,7 +8,7 @@ from datetime import datetime
 def insert_new_user(message: Message) -> None:
     """Insert new user in table users if he is not in database"""
     try:
-        conn = pg.connect(**params)
+        conn = pg.connect(**configuration.db_connection_parameters)
         with conn.cursor() as cursor:
             cursor.execute(
                 """--sql
@@ -27,7 +27,7 @@ def insert_new_user(message: Message) -> None:
 def insert_new_payment(message: Message) -> None:
     """Insert new payment in table payment"""
     try:
-        conn = pg.connect(**params)
+        conn = pg.connect(**configuration.db_connection_parameters)
         with conn.cursor() as cursor:
             cursor.execute(
                 """--sql
@@ -51,7 +51,7 @@ def insert_new_payment(message: Message) -> None:
 def insert_new_config(user_id: int, username: str, device: str, config: str) -> None:
     """Insert new config in table vpn_config"""
     try:
-        conn = pg.connect(**params)
+        conn = pg.connect(**configuration.db_connection_parameters)
         with conn.cursor() as cursor:
             cursor.execute(
                 """--sql

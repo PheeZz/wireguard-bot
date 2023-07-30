@@ -160,7 +160,7 @@ class WireguardConfig:
             f"[Interface]\n"
             f"PrivateKey = {peer_private_key}\n"
             f"Address = {self.last_peer_adress}\n"
-            f"DNS = 1.1.1.1\n\n"
+            f"DNS = 10.0.0.1\n\n"
             f"[Peer]\n"
             f"PublicKey = {self.server_public_key}\n"
             f"PresharedKey = {self.server_preshared_key}\n"
@@ -191,7 +191,6 @@ class WireguardConfig:
     def disconnect_peer(self, user_id: int):
         """Disconnects peer by user ID."""
         username = database.selector.get_username_by_id(user_id)
-
         self.comment_lines_under_username(username)
 
         # Restart wg-quick.

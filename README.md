@@ -50,7 +50,7 @@ Database: postgresql<br/>
    poetry shell
    ```
 
-   > REMEMBER path to your virtualenv, you will need it to start bot on [step 7](#Create-.service-file-for-your-bot)<br/>
+   > REMEMBER path to your virtualenv, you will need it to start bot on [step 9](#Create-.service-file-for-your-bot)<br/>
    > EXAMPLE: /home/user/.cache/pypoetry/virtualenvs/wireguard-bot-<some_hash>-py3.10
 
 3. #### Download required libs<br/>
@@ -130,8 +130,23 @@ Database: postgresql<br/>
    ```bash
    rm create.py
    ```
+7. #### Install AdGuard Home</br>
+   Firtly make installation script executable</br>
 
-7. #### Create .service file for your bot</br>
+   ```bash
+   chmod +x AdGuardInstall.sh
+   ```
+
+   Then run it</br>
+
+   ```bash
+   ./AdGuardInstall.sh
+   ```
+8. #### Configure AddGuard Home</br>
+   Open AddGuard Home web interface on url ```<your_server_ip>:3000```</br>
+   Do the initial setup, it's very simple, just follow the instructions and create admin account</br>
+   Go to Settings -> Filters -> DNS blocklists and add some blocklists (I recommend to use add all available blocklists)</br>
+9. #### Create .service file for your bot</br>
 
    Path: `/etc/systemd/system/wireguard-bot.service` </br>
    Code: (if you using python 3.10)</br>
@@ -153,14 +168,14 @@ Database: postgresql<br/>
    > P.S. You can find path to your virtualenv on [step 2](#Create-your-virtualenv-inside-project-dir)<br/>
    on line ExecStart you need to change path to your virtualenv and add `/bin/python3.10 app.py` to the end of virtualenv path<br/>
 
-8. Enable service and start it</br>
+10. Enable service and start it</br>
 
    ```bash
    systemctl enable wireguard-bot.service
    systemctl start wireguard-bot.service
    ```
 
-9.  Finally, you can use your bot and enjoy it ❤️
+11. Finally, you can use your bot and enjoy it ❤️
 
 ## Extra
 

@@ -30,9 +30,9 @@ sudo systemctl start postgresql.service
 #create wg keys
 wg genkey | tee /etc/wireguard/privatekey | wg pubkey | tee /etc/wireguard/publickey
 wg genpsk | tee /etc/wireguard/presharedkey
-chmod 600 /etc/wireguard/privatekey
-chmod 600 /etc/wireguard/presharedkey
-echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
+sudo chmod 600 /etc/wireguard/privatekey
+sudo chmod 600 /etc/wireguard/presharedkey
+sudo echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
 
 
 # Determine the correct network interface
@@ -46,13 +46,15 @@ else
 fi
 
 # Create WireGuard configuration file
-cat << EOF > /etc/wireguard/wg0.conf
+sudo cat << EOF > /etc/wireguard/wg0.conf
 [Interface]
 PrivateKey = $(cat /etc/wireguard/privatekey)
 Address = 10.0.0.1/24
 ListenPort = 51820
 PostUp = iptables -A FORWARD -i %i -j ACCEPT; iptables -t nat -A POSTROUTING -o $interface -j MASQUERADE
 PostDown = iptables -D FORWARD -i %i -j ACCEPT; iptables -t nat -D POSTROUTING -o $interface -j MASQUERADE
+
+
 EOF
 
 # Restart WireGuard service
@@ -66,7 +68,7 @@ sudo ./AdGuardHome -s start
 sudo ./AdGuardHome -s status
 sudo ./AdGuardHome -s stop
 sudo mkdir -p /etc/systemd/resolved.conf.d
-echo << EOF >> /etc/systemd/resolved.conf.d/adguardhome.conf
+sudo echo << EOF >> /etc/systemd/resolved.conf.d/adguardhome.conf
 [Resolve]
 DNS=127.0.0.1
 DNSStubListener=no
@@ -74,7 +76,8 @@ EOF
 sudo mv /etc/resolv.conf /etc/resolv.conf.backup
 sudo ln -s /run/systemd/resolve/resolv.conf /etc/resolv.conf
 sudo systemctl daemon-reload
-sudo systemctl restart systemd-resolved.service
+sudo systemctl reload-or-restart systemd-resolved
+sudo systemctl restart systemd-resolved
 sudo ./AdGuardHome -s start
 
 #configure postgres
@@ -92,7 +95,7 @@ server_ip=$(curl -s https://api.ipify.org)
 server_public_key=$(cat /etc/wireguard/publickey)
 server_preshared_key=$(cat /etc/wireguard/presharedkey)
 
-cd ..
+cd
 cd wireguard-bot
 #write .env file
 echo << EOF >> data/.env
@@ -113,6 +116,7 @@ DB_USER = 'wireguard_manager_user'
 DB_USER_PASSWORD = 'bestpassword123'
 DB_HOST = 'localhost'
 DB_PORT = '5432'
+
 EOF
 
 #install poetry and install dependencies
@@ -127,7 +131,7 @@ python3.10 create.py || sudo -u postgres psql -c "ALTER USER wireguard_manager_u
 python3.10 create.py
 
 #create .service file
-echo << EOF >> /etc/systemd/system/wireguard-bot.service
+sudo echo << EOF >> /etc/systemd/system/wireguard-bot.service
 [Unit]
 Description=WireGuard VPN Bot
 After=network.target

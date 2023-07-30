@@ -160,7 +160,7 @@ class WireguardConfig:
             f"[Interface]\n"
             f"PrivateKey = {peer_private_key}\n"
             f"Address = {self.last_peer_adress}\n"
-            f"DNS = 8.8.8.8\n\n"
+            f"DNS = 1.1.1.1\n\n"
             f"[Peer]\n"
             f"PublicKey = {self.server_public_key}\n"
             f"PresharedKey = {self.server_preshared_key}\n"

@@ -124,7 +124,6 @@ EOF
 
 #install poetry and install dependencies
 sudo python3.10 -m pip install poetry
-cd wireguard-bot
 poetry shell | head -n 1 | cut -d ' ' -f 5 > venv_path.txt
 poetry install
 

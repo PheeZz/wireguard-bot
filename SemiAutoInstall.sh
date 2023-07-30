@@ -98,7 +98,7 @@ server_preshared_key=$(cat /etc/wireguard/presharedkey)
 cd
 cd wireguard-bot
 #write .env file
-echo << EOF >> data/.env
+cat << EOF >> data/.env
 WG_BOT_TOKEN = $bot_token
 WG_SERVER_IP = $server_ip
 WG_SERVER_PORT = '51820'
@@ -130,7 +130,7 @@ python3.10 create.py || sudo -u postgres psql -c "ALTER USER wireguard_manager_u
 python3.10 create.py
 
 #create .service file
-sudo echo << EOF >> /etc/systemd/system/wireguard-bot.service
+sudo cat << EOF >> /etc/systemd/system/wireguard-bot.service
 [Unit]
 Description=WireGuard VPN Bot
 After=network.target

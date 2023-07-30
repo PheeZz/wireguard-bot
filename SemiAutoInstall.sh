@@ -68,7 +68,7 @@ sudo ./AdGuardHome -s start
 sudo ./AdGuardHome -s status
 sudo ./AdGuardHome -s stop
 sudo mkdir -p /etc/systemd/resolved.conf.d
-sudo echo << EOF >> /etc/systemd/resolved.conf.d/adguardhome.conf
+sudo cat << EOF >> /etc/systemd/resolved.conf.d/adguardhome.conf
 [Resolve]
 DNS=127.0.0.1
 DNSStubListener=no

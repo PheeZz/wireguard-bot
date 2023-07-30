@@ -80,11 +80,11 @@ sudo ./AdGuardHome -s start
 #configure postgres
 sudo -u postgres psql -c "CREATE DATABASE wireguardbot;"
 #create user
-sudo -u postgres psql -c "CREATE USER wireguard-manager WITH PASSWORD 'bestpassword123';"
+sudo -u postgres psql -c "CREATE USER wireguard_manager_user WITH PASSWORD 'bestpassword123';"
 #grant privileges
-sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE wireguardbot TO wireguard-manager;"
-#grant privileges to wireguard-manager on shema public
-sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON SCHEMA public TO wireguard-manager;"
+sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE wireguardbot TO wireguard_manager_user;"
+#grant privileges to wireguard_manager_user on shema public
+sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON SCHEMA public TO wireguard_manager_user;"
 
 #get server external ip
 server_ip=$(curl -s https://api.ipify.org)
@@ -92,6 +92,7 @@ server_ip=$(curl -s https://api.ipify.org)
 server_public_key=$(cat /etc/wireguard/publickey)
 server_preshared_key=$(cat /etc/wireguard/presharedkey)
 
+cd ..
 cd wireguard-bot
 #write .env file
 echo << EOF >> data/.env
@@ -108,7 +109,7 @@ CONFIGS_PREFIX = 'WG_VPN_BOT_BY_PHEEZZ'
 BASE_SUBSCRIPTION_MONTHLY_PRICE_RUBLES = 100
 
 DATABASE = 'wireguardbot'
-DB_USER = 'wireguard-manager'
+DB_USER = 'wireguard_manager_user'
 DB_USER_PASSWORD = 'bestpassword123'
 DB_HOST = 'localhost'
 DB_PORT = '5432'
@@ -122,7 +123,7 @@ poetry install
 #try to run create.py if it fails, then give db user superuser privileges
 mv database/create.py . && python3.10 create.py
 rm create.py
-python3.10 create.py || sudo -u postgres psql -c "ALTER USER wireguard-manager WITH SUPERUSER;"
+python3.10 create.py || sudo -u postgres psql -c "ALTER USER wireguard_manager_user WITH SUPERUSER;"
 python3.10 create.py
 
 #create .service file

@@ -123,8 +123,8 @@ sudo python3.10 -m pip install poetry
 poetry install
 
 #try to run create.py if it fails, then give db user superuser privileges
-mv database/create.py . && poetry shell
-python3.10 create.py || sudo -u postgres psql -c "ALTER USER wireguard_manager_user WITH SUPERUSER;" && python3.10 create.py
+mv database/create.py .
+$(poetry env info --path)/bin/python3.10 create.py || sudo -u postgres psql -c "ALTER USER wireguard_manager_user WITH SUPERUSER;" && $(poetry env info --path)/bin/python3.10 create.py
 rm create.py
 
 #create .service file

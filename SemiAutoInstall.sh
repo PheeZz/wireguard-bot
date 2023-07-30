@@ -11,6 +11,7 @@ echo "Enter admins ids (separated by comma):"
 read admins_ids
 
 sudo apt update && sudo apt upgrade -y
+sudo apt install -y git
 git clone https://github.com/PheeZz/wireguard-bot.git
 
 #install zsh, oh-my-zsh, and some plugins

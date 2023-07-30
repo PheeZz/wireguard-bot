@@ -95,8 +95,7 @@ server_ip=$(curl -s https://api.ipify.org)
 server_public_key=$(cat /etc/wireguard/publickey)
 server_preshared_key=$(cat /etc/wireguard/presharedkey)
 
-cd
-cd wireguard-bot
+cd ~/wireguard-bot
 #write .env file
 cat << EOF >> data/.env
 WG_BOT_TOKEN = $bot_token
@@ -124,10 +123,9 @@ sudo python3.10 -m pip install poetry
 poetry install
 
 #try to run create.py if it fails, then give db user superuser privileges
-mv database/create.py . && python3.10 create.py
+mv database/create.py . && poetry shell
+python3.10 create.py || sudo -u postgres psql -c "ALTER USER wireguard_manager_user WITH SUPERUSER;" && python3.10 create.py
 rm create.py
-python3.10 create.py || sudo -u postgres psql -c "ALTER USER wireguard_manager_user WITH SUPERUSER;"
-python3.10 create.py
 
 #create .service file
 sudo cat << EOF >> /etc/systemd/system/wireguard-bot.service

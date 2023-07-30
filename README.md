@@ -10,6 +10,7 @@
 [![!Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
 [![!PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
 [![!Wireguard](https://img.shields.io/badge/Wireguard-88171A?style=for-the-badge&logo=wireguard&logoColor=white)](https://www.wireguard.com/)
+[![!AdGuard](https://img.shields.io/badge/AdGuard-00A6D6?style=for-the-badge&logo=adguard&logoColor=white)](https://adguard.com/)
 [![!Telegram](https://img.shields.io/badge/Telegram-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white)](https://telegram.org/)
 ## Contents tree:
 
@@ -145,7 +146,7 @@ Database: postgresql<br/>
 8. #### Configure AddGuard Home</br>
    Open AddGuard Home web interface on url ```<your_server_ip>:3000```</br>
    Do the initial setup, it's very simple, just follow the instructions and create admin account</br>
-   Go to Settings -> Filters -> DNS blocklists and add some blocklists (I recommend to use add all available blocklists)</br>
+   Go to Settings -> Filters -> DNS blocklists and add some blocklists (I recommend to use add all available blocklists EXCEPT `No Google` list)</br>
 9. #### Create .service file for your bot</br>
 
    Path: `/etc/systemd/system/wireguard-bot.service` </br>

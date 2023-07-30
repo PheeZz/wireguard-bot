@@ -3,20 +3,16 @@ from os import remove
 from io import BytesIO
 from aiogram import types
 from aiogram.dispatcher import FSMContext
-from aiogram.utils.markdown import hcode
+from aiogram.utils.markdown import hcode, hlink
 
 from middlewares import rate_limit
 import keyboards as kb
 
 import database
 from loader import bot
-from data.config import (
-    ADMINS,
-    PAYMENT_CARD,
-    CONFIGS_PREFIX,
-    BASE_SUBSCRIPTION_MONTHLY_PRICE_RUBLES,
-)
+from data import configuration
 from loader import vpn_config
+from database import selector
 
 from utils.fsm import NewConfig, NewPayment
 from utils.qr_code import create_qr_code_from_peer_data
@@ -27,8 +23,8 @@ async def cmd_start(message: types.Message) -> types.Message:
     if not message.from_user.username:
         await message.answer(
             f"Привет, {message.from_user.full_name}!\nУ тебя не установлен username, установи его в настройках телеграма и напиши /start\n"
-            "Если не знаешь как это сделать - посмотри [справку](https://silverweb.by/kak-sozdat-nik-v-telegramm/)",
-            parse_mode=types.ParseMode.MARKDOWN,
+            f"Если не знаешь как это сделать - посмотри {hlink('справку', 'https://silverweb.by/kak-sozdat-nik-v-telegramm/')}",
+            parse_mode=types.ParseMode.HTML,
         )
         return
     if database.selector.is_exist_user(message.from_user.id):
@@ -50,18 +46,20 @@ async def cmd_start(message: types.Message) -> types.Message:
     )
     await bot.send_message(
         message.from_user.id,
-        "Подробное описание бота и его функционала доступно на [странице](https://telegra.ph/FAQ-po-botu-01-08), оплачивая подписку, вы соглашаетесь с правилами использования бота и условиями возврата средств, указанными в статье выше.",
-        parse_mode=types.ParseMode.MARKDOWN,
+        "Подробное описание бота и его функционала доступно на "
+        f"{hlink('странице','https://telegra.ph/FAQ-po-botu-01-08')}, "
+        "оплачивая подписку, вы соглашаетесь с правилами использования бота и условиями возврата средств, указанными в статье выше.",
+        parse_mode=types.ParseMode.HTML,
     )
     database.insert_new_user(message)
 
     # notify admin about new user
-    for admin in ADMINS:
+    for admin in configuration.admins:
         # format: Новый пользователь: Имя (id: id), username, id like code format in markdown
         await bot.send_message(
             admin,
             f"Новый пользователь: {hcode(message.from_user.full_name)}\n"
-            f"id: {hcode(message.from_user.id)}, {hcode(message.from_user.username)}",
+            f"id: {hcode(message.from_user.id)}, username: {hcode(message.from_user.username)}",
             parse_mode=types.ParseMode.HTML,
         )
 
@@ -73,7 +71,7 @@ async def cmd_pay(message: types.Message, state: FSMContext) -> types.Message:
     await bot.send_message(
         message.from_user.id,
         "В данный момент нет возможности совершить платеж в боте."
-        f"Для оплаты подписки переведите {BASE_SUBSCRIPTION_MONTHLY_PRICE_RUBLES}₽ на карту {hcode(PAYMENT_CARD)} "
+        f"Для оплаты подписки переведите {configuration.base_subscription_monthly_price_rubles}₽ на карту {hcode(configuration.payment_card)} "
         "и отправьте скриншот чека/операции в ответ на это сообщение.",
         parse_mode=types.ParseMode.HTML,
         reply_markup=await kb.cancel_payment_kb(),
@@ -91,7 +89,7 @@ async def got_payment_screenshot(message: types.Message, state: FSMContext):
     await message.reply("Подождите, пока мы проверим вашу оплату.")
     await state.finish()
     # forwards screenshot to admin
-    for admin in ADMINS:
+    for admin in configuration.admins:
         await message.forward(admin)
         give_help_command = f"/give {message.from_user.id} 30"
         await bot.send_message(
@@ -187,7 +185,7 @@ async def device_selected(call: types.CallbackQuery, state=FSMContext):
     )
 
     io_config_file = BytesIO(user_config.encode("utf-8"))
-    filename = f"{CONFIGS_PREFIX}_{call.from_user.username}_{device}.conf"
+    filename = f"{configuration.configs_prefix}_{call.from_user.username}_{device}.conf"
 
     # send config file
     await call.message.answer_document(
@@ -203,7 +201,7 @@ async def device_selected(call: types.CallbackQuery, state=FSMContext):
         await call.message.answer_photo(
             types.InputFile(
                 config_qr_code,
-                filename=f"{CONFIGS_PREFIX}_{call.from_user.username}.png",
+                filename=f"{configuration.configs_prefix}_{call.from_user.username}.png",
             ),
         )
 
@@ -224,20 +222,35 @@ async def cmd_show_config(message: types.Message, state=FSMContext):
         user_id=message.from_user.id,
         config_name=f"{message.from_user.username}_{device}",
     )
-    filename = f"{CONFIGS_PREFIX}_{message.from_user.username}_{device}.conf"
+    filename = (
+        f"{configuration.configs_prefix}_{message.from_user.username}_{device}.conf"
+    )
     io_config_file = BytesIO(config.encode("utf-8"))
 
-    # send config file
-    await message.answer_document(
-        types.InputFile(
-            io_config_file,
-            filename=filename,
-        ),
-    )
+    if device == "PC":
+        # send config file
+        await message.answer_document(
+            types.InputFile(
+                io_config_file,
+                filename=filename,
+            ),
+        )
 
     if device == "PHONE":
-        image_filename = f"{CONFIGS_PREFIX}_{message.from_user.username}.png"
+        # firstly create qr code image, then send it with config file
+        # this method is used for restrict delay between sending file and photo
+        image_filename = (
+            f"{configuration.configs_prefix}_{message.from_user.username}.png"
+        )
         config_qr_code = create_qr_code_from_peer_data(config)
+
+        await message.answer_document(
+            types.InputFile(
+                io_config_file,
+                filename=filename,
+            ),
+        )
+
         await message.answer_photo(
             types.InputFile(
                 config_qr_code,
@@ -249,16 +262,16 @@ async def cmd_show_config(message: types.Message, state=FSMContext):
 @rate_limit(limit=5)
 async def cmd_support(message: types.Message):
     # send telegraph page with support info (link: https://telegra.ph/FAQ-po-botu-01-08)
-    # place link inside 'странице'and parse it in markdown
     await message.answer(
-        "Подробное описание бота и его функционала доступно на [странице](https://telegra.ph/FAQ-po-botu-01-08)",
-        parse_mode=types.ParseMode.MARKDOWN,
+        f"Подробное описание бота и его функционала доступно на {hlink('странице','https://telegra.ph/FAQ-po-botu-01-08')}",
+        parse_mode=types.ParseMode.HTML,
     )
 
-    # answer with username info @pheezz as markdown
+    admin_username = selector.get_username_by_id(configuration.admins[0])
+    admin_telegram_link = f"t.me/{admin_username}"
     await message.answer(
-        "Если у тебя все еще остались вопросы, то ты можешь написать [мне](t.me/pheezz) лично",
-        parse_mode=types.ParseMode.MARKDOWN,
+        f"Если у тебя все еще остались вопросы, то ты можешь написать {hlink('мне',admin_telegram_link)} лично",
+        parse_mode=types.ParseMode.HTML,
     )
 
 

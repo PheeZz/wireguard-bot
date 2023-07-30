@@ -6,7 +6,8 @@ from aiogram.types import ContentType
 from loader import dp
 from aiogram import Dispatcher
 
-def setup(dp:Dispatcher):
+
+def setup(dp: Dispatcher):
     """setup handlers for users and moders in one place and add throttling in 5 seconds
 
     Args:

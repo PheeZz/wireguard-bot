@@ -133,27 +133,26 @@ class WireguardConfig:
             self.config = self.get_config()
             self.last_peer_adress = self.get_last_peer_adress()
 
-    def get_peer_adress(self, username: str) -> str:
-        """returns peer adress by username"""
-        try:
-            for line in self.config.splitlines():
-                if line.startswith("#") and line[2:] == username:
-                    for line in self.config.splitlines():
-                        if line.startswith("AllowedIPs") or line.startswith(
-                            "#AllowedIPs"
-                        ):
-                            peer_adress = line
-                    # delete 'AllowedIPs = ' from string
-                    logger.info(
-                        f"[+] peer adress for user {username} is {peer_adress[13:]}"
-                    )
-                    return (
-                        peer_adress[13:]
-                        if line.startswith("AllowedIPs")
-                        else peer_adress[14:]
-                    )
-        except Exception as e:
-            logger.error(f"[-] {e}")
+    def get_peer_address(self, username: str) -> str:
+        """Returns peer address by username"""
+        for line in self.config.splitlines():
+            if line.startswith("#") and line[2:] == username:
+                for line2 in self.config.splitlines():
+                    if line2.startswith("AllowedIPs") or line2.startswith(
+                        "#AllowedIPs"
+                    ):
+                        peer_address = line2
+                # Remove 'AllowedIPs = ' from the string
+                logger.info(
+                    f"[+] Peer address for user {username} is {peer_address[13:]}"
+                )
+                return (
+                    peer_address[13:]
+                    if line2.startswith("AllowedIPs")
+                    else peer_address[14:]
+                )
+        logger.error("[-] Peer address not found")
+        return ""
 
     def create_peer_config(self, peer_private_key: str) -> str:
         """creates config for client and returns it as string"""

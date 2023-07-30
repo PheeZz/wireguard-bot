@@ -1,8 +1,9 @@
 from aiogram import types
 from aiogram.dispatcher import FSMContext
 from loader import bot, vpn_config
+from loguru import logger
 
-from data import config
+from data import configuration
 import database
 import keyboards as kb
 from middlewares import rate_limit
@@ -11,15 +12,31 @@ from pprint import pformat
 from datetime import datetime
 from aiogram.utils.markdown import hcode, hbold, hpre
 from io import BytesIO
+from database import selector
 
 
 def is_admin(func):
     async def wrapped(message: types.Message, state: FSMContext):
-        if message.from_user.id in config.ADMINS:
+        if message.from_user.id in configuration.admins:
             await func(message, state)
         else:
+            admins_usernames = [
+                selector.get_username_by_id(ADMIN) for ADMIN in configuration.admins
+            ]
+            if not admins_usernames:
+                await message.answer("You don't have permission to use this command.")
+                logger.warning(
+                    f"Admins usernames not found. Check config.py file. {configuration.admins}"
+                )
+                return
+
+            usernames_references = "".join(
+                [f"@{username} " for username in admins_usernames]
+            )
             await message.answer(
-                "You don't have permission to use this command.\n\Write to @pheezz for more info."
+                f"You don't have permission to use this command.\n"
+                f"Please, contact with admins: {usernames_references}",
+                parse_mode=types.ParseMode.HTML,
             )
 
     return wrapped
@@ -41,7 +58,7 @@ async def statistic_endtime(message: types.Message, state: FSMContext):
     users = database.selector.get_all_usernames_and_enddate()
     if not users:
         await message.answer(
-            f"{hbold('No users found')}", parse_mode=types.ParseMode.HTML
+            f"{hbold('Error: database is empty ')}", parse_mode=types.ParseMode.HTML
         )
         return
     # sort by enddate high to low
@@ -117,7 +134,7 @@ async def give_subscription_time(
             else await kb.free_user_kb(user_id=user_id),
             parse_mode=types.ParseMode.HTML,
         )
-        for admin in config.ADMINS:
+        for admin in configuration.admins:
             await bot.send_message(
                 chat_id=admin,
                 text=f"Пользователю {hcode(user_id)} продлена подписка на {hbold(days)} дней.\n"

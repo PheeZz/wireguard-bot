@@ -19,7 +19,7 @@ sudo apt install -y zsh curl
 
 #install python3.10
 sudo apt install -y software-properties-common
-sudo add-apt-repository ppa:deadsnakes/ppa
+sudo add-apt-repository -y ppa:deadsnakes/ppa
 sudo apt install -y python3.10 python3.10-venv python3.10-dev
 curl -sS https://bootstrap.pypa.io/get-pip.py | python3.10
 

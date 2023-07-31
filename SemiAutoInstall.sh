@@ -221,7 +221,7 @@ server_public_key=$(cat /etc/wireguard/publickey)
 server_preshared_key=$(cat /etc/wireguard/presharedkey)
 
 #configure wireguard peer dns server
-if install_adguard_home
+if [ "$install_adguard_home" = "true" ]
 then
     peer_dns="10.0.0.1"
 else

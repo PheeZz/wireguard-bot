@@ -155,7 +155,7 @@ then
 fi
 
 sudo apt update && sudo apt upgrade -y
-sudo apt install -y git
+sudo apt install -y git bat
 git clone https://github.com/PheeZz/wireguard-bot.git
 
 #install zsh, curl
@@ -313,4 +313,15 @@ EOF
 fi
 
 echo "$Green Installation completed successfully" | sed 's/\$//g'
+echo "$Defaul_color" | sed 's/\$//g'
+
+echo "$Blue Your .env file located at $Orange ~/wireguard-bot/data/.env" | sed 's/\$//g'
+echo "$Blue Do u want to watch it? [ y / $Blue [n] $White]" | sed 's/\$//g'
+read watch_env_file
+
+if [ "$watch_env_file" = "y" ]
+then
+    batcat ~/wireguard-bot/data/.env
+fi
+
 echo "$Defaul_color" | sed 's/\$//g'

@@ -56,9 +56,6 @@ Database: postgresql<br/>
    poetry shell
    ```
 
-   > REMEMBER path to your virtualenv, you will need it to start bot on [step 9](#Create-.service-file-for-your-bot)<br/>
-   > EXAMPLE: /home/user/.cache/pypoetry/virtualenvs/wireguard-bot-<some_hash>-py3.10
-
 4. #### Download required libs<br/>
 
    ```bash
@@ -93,8 +90,8 @@ Database: postgresql<br/>
    WG_BOT_TOKEN = <str>
    #ip of your wireguard server
    WG_SERVER_IP = <str>
-   #port of your wireguard server, default 51820
-   WG_SERVER_PORT = '51820'
+   #port of your wireguard server
+   WG_SERVER_PORT = '51830'
    #server's public key
    WG_SERVER_PUBLIC_KEY = <str>
    #server's preshared key
@@ -152,6 +149,7 @@ Database: postgresql<br/>
    Open AddGuard Home web interface on url ```<your_server_ip>:3000```</br>
    Do the initial setup, it's very simple, just follow the instructions and create admin account</br>
    Go to Settings -> Filters -> DNS blocklists and add some blocklists (I recommend to use add all available blocklists EXCEPT `No Google` list)</br>
+   
 10. #### Create .service file for your bot</br>
 
    Path: `/etc/systemd/system/wireguard-bot.service` </br>
@@ -166,14 +164,11 @@ Database: postgresql<br/>
     Type=idle
     Restart=on-failure
     User=root
-    ExecStart=/bin/bash -c 'cd ~/wireguard-bot/ && /home/user/.cache/pypoetry/virtualenvs/wireguard-bot-<some_hash>-py3.10/bin/python3.10 app.py'
+    ExecStart=/bin/bash -c 'cd ~/wireguard-bot/ && $(poetry env info --path)/bin/python3.10 app.py'
 
     [Install]
     WantedBy=multi-user.target
    ```
-   > P.S. You can find path to your virtualenv on [step 2](#Create-your-virtualenv-inside-project-dir)<br/>
-   on line ExecStart you need to change path to your virtualenv and add `/bin/python3.10 app.py` to the end of virtualenv path<br/>
-
 11. Enable service and start it</br>
 
    ```bash
@@ -198,10 +193,6 @@ Database: postgresql<br/>
    `/stats` without options will show all users.<br/>
    `/wgrestart` - restart wireguard service
 
-## TODO
-
-1. Simplify installation.
-2. Maybe add docker-file.
 
 
 ## Support

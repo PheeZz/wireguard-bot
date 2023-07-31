@@ -117,6 +117,16 @@ then
 fi
 
 echo ""
+echo "Do u want to use domain name instead of ip? [$Blue enter domain name$White or press ENTER to skip ]" | sed 's/\$//g'
+read domain_name
+
+#if domain name not empty then switch variable server ip with it
+if [ -n "$domain_name" ]
+then
+      server_ip=$domain_name
+fi
+
+echo ""
 echo "Do you want to install AdGuard Home? [ y / $Blue [n] $White]" | sed 's/\$//g'
 read install_adguard_home
 

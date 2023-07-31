@@ -10,13 +10,13 @@ sudo apt install -y curl
 clear
 
 #get server external ip
-server_ip=$(curl -s https://api.ipify.org)
+server_ip=$(curl -s ifconfig.me)
 
 if [ -z "$server_ip" ]
 then
       echo "$Red Can't get server external ip" | sed 's/\$//g'
       echo "$Red Check your internet connection" | sed 's/\$//g'
-      echo "$Red Fail on command: curl -s https://api.ipify.org" | sed 's/\$//g'
+      echo "$Red Fail on command: curl -s ifconfig.me" | sed 's/\$//g'
       exit 1
 fi
 

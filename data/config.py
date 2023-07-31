@@ -22,6 +22,7 @@ class Config:
             self._get_base_subscription_monthly_price_rubles()
         )
         self._db_connection_parameters = self._get_db_connection_parameters()
+        self._peer_dns = self._get_peer_dns()
 
     @property
     def bot_token(self) -> str:
@@ -50,6 +51,10 @@ class Config:
     @property
     def db_connection_parameters(self) -> dict:
         return self._db_connection_parameters
+
+    @property
+    def peer_dns(self) -> str:
+        return self._peer_dns
 
     def _get_bot_token(self) -> str:
         bot_token = os.getenv("WG_BOT_TOKEN")
@@ -107,3 +112,9 @@ class Config:
         if not base_subscription_monthly_price_rubles:
             raise EnvVariableNotFound("BASE_SUBSCRIPTION_MONTHLY_PRICE_RUBLES")
         return int(base_subscription_monthly_price_rubles)
+    
+    def _get_peer_dns(self) -> str:
+        peer_dns = os.getenv("PEER_DNS")
+        if not peer_dns:
+            raise EnvVariableNotFound("PEER_DNS")
+        return peer_dns

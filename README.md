@@ -149,7 +149,7 @@ Database: postgresql<br/>
    Open AddGuard Home web interface on url ```<your_server_ip>:3000```</br>
    Do the initial setup, it's very simple, just follow the instructions and create admin account</br>
    Go to Settings -> Filters -> DNS blocklists and add some blocklists (I recommend to use add all available blocklists EXCEPT `No Google` list)</br>
-   
+
 10. #### Create .service file for your bot</br>
 
    Path: `/etc/systemd/system/wireguard-bot.service` </br>

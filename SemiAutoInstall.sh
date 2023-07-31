@@ -1,26 +1,138 @@
-#answer user for bot token
-echo "Enter bot token:"
-read bot_token
-
-#answer user for payment card
-echo "Enter payment card number:"
-read payment_card
-
-#answer user for admins ids
-echo "Enter admins ids (separated by comma):"
-read admins_ids
-
 Red=$'\e[1;31m'
 Green=$'\e[1;32m'
 Blue=$'\e[1;34m'
+Defaul_color=$'\e[0m'
+Orange=$'\e[1;33m'
+White=$'\e[1;37m'
 
+sudo apt install -y curl
+#clear screen after install curl
+clear
+
+#get server external ip
+server_ip=$(curl -s https://api.ipify.org)
+
+if [ -z "$server_ip" ]
+then
+      echo "$Red Can't get server external ip" | sed 's/\$//g'
+      echo "$Red Check your internet connection" | sed 's/\$//g'
+      echo "$Red Fail on command: curl -s https://api.ipify.org" | sed 's/\$//g'
+      exit 1
+fi
+
+echo $Blue | sed 's/\$//g'
+echo "This script will install WireGuard VPN Bot on your server"
+echo "It will install and configure:"
+echo $Orange | sed 's/\$//g'
+echo "- WireGuard VPN"
+echo "- AdGuard Home"
+echo "- PostgreSQL"
+echo "- Python 3.10"
+echo "- Poetry"
+echo "- Telegram Bot"
+echo $Red | sed 's/\$//g'
+echo "............................................................"
+echo "...................made by PheeZz..........................."
+echo "............................................................"
+
+echo $White | sed 's/\$//g'
+#answer user for bot token
+echo "Now need to input some data for bot configuration"
+echo "You can change it later in ~/wireguard-bot/data/.env file"
+echo ""
+
+#ask for bot token
+echo "Enter bot token:"
+echo "You can get it from $Blue @BotFather"
+read bot_token
+
+#ask user for payment card
+echo "$White" | sed 's/\$//g'
+echo "Enter payment card number:"
+echo "Just press enter for use default card [$Blue 4242424242424242 $White]" | sed 's/\$//g'
+read payment_card
+if [ -z "$payment_card" ]
+then
+      payment_card="4242424242424242"
+fi
+
+#ask user for admins ids
+echo ""
+echo "Enter admins ids (separated by comma):"
+echo "Just press enter for use default ids [$Blue 123456789, $White]" | sed 's/\$//g'
+echo "You can get your id by sending /id command to @userinfobot"
+read admins_ids
+if [ -z "$admins_ids" ]
+then
+      admins_ids="123456789,"
+fi
+
+#ask user for Database name
+echo ""
+echo "Enter Database name:"
+echo "Just press enter for use default name [$Blue wireguardbot $White]" | sed 's/\$//g'
+read database_name
+if [ -z "$database_name" ]
+then
+      database_name="wireguardbot"
+fi
+
+#ask user for Database user
+echo ""
+echo "Enter Database user:"
+echo "Just press enter for use default user [$Blue wireguard_manager_user $White]" | sed 's/\$//g'
+read database_user
+if [ -z "$database_user" ]
+then
+      database_user="wireguard_manager_user"
+fi
+
+echo ""
+echo "Enter Database user password:"
+echo "Just press enter for use default password [$Blue bestpassword123 $White]" | sed 's/\$//g'
+read database_passwd
+if [ -z "$database_passwd" ]
+then
+      database_passwd="bestpassword123"
+fi
+
+echo ""
+echo "Enter config name prefix:"
+echo "Just press enter for use default prefix [$Blue WG_VPN_BOT_BY_PHEEZZ $White]" | sed 's/\$//g'
+read config_prefix
+
+if [ -z "$config_prefix" ]
+then
+      config_prefix="WG_VPN_BOT_BY_PHEEZZ"
+fi
+
+echo ""
+echo "Enter base subscription monthly price in rubles:"
+echo "Just press enter for use default price [$Blue 100 $White]" | sed 's/\$//g'
+read base_subscription_monthly_price_rubles
+
+if [ -z "$base_subscription_monthly_price_rubles" ]
+then
+      base_subscription_monthly_price_rubles="100"
+fi
+
+echo ""
+echo "Do you want to install AdGuard Home? [ y / $Blue [n] $White]" | sed 's/\$//g'
+read install_adguard_home
+
+if [ "$install_adguard_home" = "y" ]
+then
+      install_adguard_home="true"
+else
+      install_adguard_home="false"
+fi
 
 sudo apt update && sudo apt upgrade -y
 sudo apt install -y git
 git clone https://github.com/PheeZz/wireguard-bot.git
 
 #install zsh, curl
-sudo apt install -y zsh curl
+sudo apt install -y curl
 
 #install python3.10
 sudo apt install -y software-properties-common
@@ -65,26 +177,6 @@ EOF
 # Restart WireGuard service
 systemctl restart wg-quick@wg0.service
 
-# Install AdGuard Home and configure it to use WireGuard as upstream DNS server
-curl -s -S -L https://raw.githubusercontent.com/AdguardTeam/AdGuardHome/master/scripts/install.sh | sh -s -- -v
-cd /opt/AdGuardHome/
-sudo ./AdGuardHome -s install
-sudo ./AdGuardHome -s start
-sudo ./AdGuardHome -s status
-sudo ./AdGuardHome -s stop
-sudo mkdir -p /etc/systemd/resolved.conf.d
-sudo cat << EOF >> /etc/systemd/resolved.conf.d/adguardhome.conf
-[Resolve]
-DNS=127.0.0.1
-DNSStubListener=no
-EOF
-sudo mv /etc/resolv.conf /etc/resolv.conf.backup
-sudo ln -s /run/systemd/resolve/resolv.conf /etc/resolv.conf
-sudo systemctl daemon-reload
-sudo systemctl reload-or-restart systemd-resolved
-sudo systemctl restart systemd-resolved
-sudo ./AdGuardHome -s start
-
 #configure postgres
 sudo -u postgres psql -c "CREATE DATABASE wireguardbot;"
 #create user
@@ -94,11 +186,18 @@ sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE wireguardbot TO wireg
 #grant privileges to wireguard_manager_user on shema public
 sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON SCHEMA public TO wireguard_manager_user;"
 
-#get server external ip
-server_ip=$(curl -s https://api.ipify.org)
+
 #get server public and preshared keys
 server_public_key=$(cat /etc/wireguard/publickey)
 server_preshared_key=$(cat /etc/wireguard/presharedkey)
+
+#configure wireguard peer dns server
+if install_adguard_home
+then
+    peer_dns="10.0.0.1"
+else
+    peer_dns="1.1.1.1"
+fi
 
 cd ~/wireguard-bot
 #write .env file
@@ -112,12 +211,14 @@ WG_CFG_PATH = '/etc/wireguard/wg0.conf'
 PAYMENTS_TOKEN = 'PAYMENTS_TOKEN_HERE'
 ADMINS_IDS = $admins_ids
 PAYMENT_CARD = $payment_card
-CONFIGS_PREFIX = 'WG_VPN_BOT_BY_PHEEZZ'
-BASE_SUBSCRIPTION_MONTHLY_PRICE_RUBLES = 100
+CONFIGS_PREFIX = $config_prefix
+BASE_SUBSCRIPTION_MONTHLY_PRICE_RUBLES = $base_subscription_monthly_price_rubles
+PEER_DNS = '$peer_dns'
 
-DATABASE = 'wireguardbot'
-DB_USER = 'wireguard_manager_user'
-DB_USER_PASSWORD = 'bestpassword123'
+
+DATABASE = $database_name
+DB_USER = $database_user
+DB_USER_PASSWORD = $database_passwd
 DB_HOST = 'localhost'
 DB_PORT = '5432'
 
@@ -152,5 +253,34 @@ systemctl daemon-reload
 systemctl enable wireguard-bot.service
 systemctl start wireguard-bot.service
 
-#show message about configuring AdGuard Home
-for i in {1..5}; do echo "$Blue HEY USER, configure $Green ADGUARD HOME at url $Red http://$server_ip:3000"; done
+
+if [ "$install_adguard_home" = "true" ]
+then
+    # Install AdGuard Home and configure it to use WireGuard as upstream DNS server
+    curl -s -S -L https://raw.githubusercontent.com/AdguardTeam/AdGuardHome/master/scripts/install.sh | sh -s -- -v
+    cd /opt/AdGuardHome/
+    sudo ./AdGuardHome -s install
+    sudo ./AdGuardHome -s start
+    sudo ./AdGuardHome -s status
+    sudo ./AdGuardHome -s stop
+    sudo mkdir -p /etc/systemd/resolved.conf.d
+    sudo cat << EOF >> /etc/systemd/resolved.conf.d/adguardhome.conf
+[Resolve]
+DNS=127.0.0.1
+DNSStubListener=no
+EOF
+    sudo mv /etc/resolv.conf /etc/resolv.conf.backup
+    sudo ln -s /run/systemd/resolve/resolv.conf /etc/resolv.conf
+    sudo systemctl daemon-reload
+    sudo systemctl reload-or-restart systemd-resolved
+    sudo systemctl restart systemd-resolved
+    sudo ./AdGuardHome -s start
+    #show message about configuring AdGuard Home
+    for i in {1..5}; do echo "$Blue HEY USER, configure $Green ADGUARD HOME at url $Red http://$server_ip:3000" | sed 's/\$//g'; done
+    #show message about get torrrents blocklist
+    for i in {1..2}; do echo "$Orange TORRENTS BLOCKLIST at url $Red https://raw.githubusercontent.com/DNCD/block-bittorrent-domains/main/trackers" | sed 's/\$//g'; done
+
+fi
+
+echo "$Green Installation completed successfully" | sed 's/\$//g'
+echo "$Defaul_color" | sed 's/\$//g'

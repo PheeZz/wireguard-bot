@@ -3,7 +3,7 @@ from os import getenv
 import database
 import subprocess
 from ipaddress import IPv4Address
-
+from data import configuration
 
 class WireguardConfig:
     # TODO: move it to config.py or extra module with server_cfg and client_cfg classes
@@ -163,7 +163,7 @@ class WireguardConfig:
             f"[Interface]\n"
             f"PrivateKey = {peer_private_key}\n"
             f"Address = {self.last_peer_adress}\n"
-            f"DNS = 10.0.0.1\n\n"
+            f"DNS = {configuration.peer_dns}\n\n"
             f"[Peer]\n"
             f"PublicKey = {self.server_public_key}\n"
             f"PresharedKey = {self.server_preshared_key}\n"

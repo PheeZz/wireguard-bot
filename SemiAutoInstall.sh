@@ -5,6 +5,9 @@ Defaul_color=$'\e[0m'
 Orange=$'\e[1;33m'
 White=$'\e[1;37m'
 
+#disable firewall
+sudo ufw disable
+
 sudo apt install -y curl
 #clear screen after install curl
 clear
@@ -235,7 +238,10 @@ DB_PORT = '5432'
 EOF
 
 #install poetry and install dependencies
-sudo python3.10 -m pip install poetry
+curl -sSL https://install.python-poetry.org | python3.10 -
+#add poetry to path
+export PATH="/root/.local/bin:$PATH"
+#install dependencies
 poetry install
 
 #try to run create.py if it fails, then give db user superuser privileges

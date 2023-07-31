@@ -238,9 +238,7 @@ DB_PORT = '5432'
 EOF
 
 #install poetry and install dependencies
-curl -sSL https://install.python-poetry.org | python3.10 -
-#add poetry to path
-export PATH="/root/.local/bin:$PATH"
+sudo pip3.10 install poetry
 #install dependencies
 poetry install
 

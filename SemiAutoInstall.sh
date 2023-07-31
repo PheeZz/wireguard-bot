@@ -13,7 +13,7 @@ read admins_ids
 Red=$'\e[1;31m'
 Green=$'\e[1;32m'
 Blue=$'\e[1;34m'
-wg_server_port = 51830
+
 
 sudo apt update && sudo apt upgrade -y
 sudo apt install -y git
@@ -55,7 +55,7 @@ sudo cat << EOF > /etc/wireguard/wg0.conf
 [Interface]
 PrivateKey = $(cat /etc/wireguard/privatekey)
 Address = 10.0.0.1/24
-ListenPort = $wg_server_port
+ListenPort = 51830
 PostUp = iptables -A FORWARD -i %i -j ACCEPT; iptables -t nat -A POSTROUTING -o $interface -j MASQUERADE
 PostDown = iptables -D FORWARD -i %i -j ACCEPT; iptables -t nat -D POSTROUTING -o $interface -j MASQUERADE
 
@@ -105,7 +105,7 @@ cd ~/wireguard-bot
 cat << EOF >> data/.env
 WG_BOT_TOKEN = $bot_token
 WG_SERVER_IP = $server_ip
-WG_SERVER_PORT = $wg_server_port
+WG_SERVER_PORT = '51830'
 WG_SERVER_PUBLIC_KEY = $server_public_key
 WG_SERVER_PRESHARED_KEY= $server_preshared_key
 WG_CFG_PATH = '/etc/wireguard/wg0.conf'

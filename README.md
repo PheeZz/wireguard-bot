@@ -108,6 +108,8 @@ Database: postgresql<br/>
    CONFIGS_PREFIX = <str>
    #how much subscription costs in rubles
    BASE_SUBSCRIPTION_MONTHLY_PRICE_RUBLES = <int>
+   #dns server for your peers, default 1.1.1.1 if you don't use AdGuard Home, else 10.0.0.1
+   PEER_DNS = '1.1.1.1'
 
    #name of your database
    DATABASE = <str>

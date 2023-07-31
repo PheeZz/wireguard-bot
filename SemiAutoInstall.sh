@@ -52,7 +52,7 @@ read bot_token
 #ask user for payment card
 echo "$White" | sed 's/\$//g'
 echo "Enter payment card number:"
-echo "Just press enter for use default card [$Blue 4242424242424242 $White]" | sed 's/\$//g'
+echo "Just press ENTER for use default card [$Blue 4242424242424242 $White]" | sed 's/\$//g'
 read payment_card
 if [ -z "$payment_card" ]
 then
@@ -62,7 +62,7 @@ fi
 #ask user for admins ids
 echo ""
 echo "Enter admins ids (separated by comma):"
-echo "Just press enter for use default ids [$Blue 123456789, $White]" | sed 's/\$//g'
+echo "Just press ENTER for use default ids [$Blue 123456789, $White]" | sed 's/\$//g'
 echo "You can get your id by sending /id command to @userinfobot"
 read admins_ids
 if [ -z "$admins_ids" ]
@@ -73,7 +73,7 @@ fi
 #ask user for Database name
 echo ""
 echo "Enter Database name:"
-echo "Just press enter for use default name [$Blue wireguardbot $White]" | sed 's/\$//g'
+echo "Just press ENTER for use default name [$Blue wireguardbot $White]" | sed 's/\$//g'
 read database_name
 if [ -z "$database_name" ]
 then
@@ -83,7 +83,7 @@ fi
 #ask user for Database user
 echo ""
 echo "Enter Database user:"
-echo "Just press enter for use default user [$Blue wireguard_manager_user $White]" | sed 's/\$//g'
+echo "Just press ENTER for use default user [$Blue wireguard_manager_user $White]" | sed 's/\$//g'
 read database_user
 if [ -z "$database_user" ]
 then
@@ -92,7 +92,7 @@ fi
 
 echo ""
 echo "Enter Database user password:"
-echo "Just press enter for use default password [$Blue bestpassword123 $White]" | sed 's/\$//g'
+echo "Just press ENTER for use default password [$Blue bestpassword123 $White]" | sed 's/\$//g'
 read database_passwd
 if [ -z "$database_passwd" ]
 then
@@ -101,7 +101,7 @@ fi
 
 echo ""
 echo "Enter config name prefix:"
-echo "Just press enter for use default prefix [$Blue WG_VPN_BOT_BY_PHEEZZ $White]" | sed 's/\$//g'
+echo "Just press ENTER for use default prefix [$Blue WG_VPN_BOT_BY_PHEEZZ $White]" | sed 's/\$//g'
 read config_prefix
 
 if [ -z "$config_prefix" ]
@@ -111,7 +111,7 @@ fi
 
 echo ""
 echo "Enter base subscription monthly price in rubles:"
-echo "Just press enter for use default price [$Blue 100 $White]" | sed 's/\$//g'
+echo "Just press ENTER for use default price [$Blue 100 $White]" | sed 's/\$//g'
 read base_subscription_monthly_price_rubles
 
 if [ -z "$base_subscription_monthly_price_rubles" ]
@@ -138,6 +138,20 @@ then
       install_adguard_home="true"
 else
       install_adguard_home="false"
+fi
+
+#if install_adguard_home is false ask for peer dns server
+if [ "$install_adguard_home" = "false" ]
+then
+      echo ""
+      echo "Enter peer dns server(-s):"
+      echo "Just press ENTER for use default dns server [$Blue 1.1.1.1, 8.8.8.8 $White]" | sed 's/\$//g'
+
+        read peer_dns
+        if [ -z "$peer_dns" ]
+        then
+              peer_dns="1.1.1.1, 8.8.8.8"
+        fi
 fi
 
 sudo apt update && sudo apt upgrade -y

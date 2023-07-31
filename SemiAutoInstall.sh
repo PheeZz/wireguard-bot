@@ -162,8 +162,10 @@ wg genkey | tee /etc/wireguard/privatekey | wg pubkey | tee /etc/wireguard/publi
 wg genpsk | tee /etc/wireguard/presharedkey
 sudo chmod 600 /etc/wireguard/privatekey
 sudo chmod 600 /etc/wireguard/presharedkey
-sudo echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
 
+# Enable IP forwarding
+sudo echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
+sysctl -p /etc/sysctl.conf
 
 # Determine the correct network interface
 if ip link show eth0 &> /dev/null; then

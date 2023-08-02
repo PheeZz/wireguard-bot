@@ -135,7 +135,7 @@ Database: postgresql<br/>
    ```bash
    rm create.py
    ```
-8. #### Install AdGuard Home</br>
+8. #### Install AdGuard Home (optional)</br>
    Firtly make installation script executable</br>
 
    ```bash

@@ -207,14 +207,13 @@ EOF
 systemctl restart wg-quick@wg0.service
 
 #configure postgres
-sudo -u postgres psql -c "CREATE DATABASE $database_name;"
+su - postgres -c "psql -c \"CREATE DATABASE $database_name;\""
 #create user
-sudo -u postgres psql -c "CREATE USER $database_user WITH PASSWORD '$database_passwd';"
+su - postgres -c "psql -c \"CREATE USER $database_user WITH PASSWORD '$database_passwd';\""
 #grant privileges
-sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE $database_name TO $database_user;"
+su - postgres -c "psql -c \"GRANT ALL PRIVILEGES ON DATABASE $database_name TO $database_user;\""
 #grant privileges to wireguard_manager_user on shema public
-sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON SCHEMA public TO $database_user;"
-
+su - postgres -c "psql -c \"GRANT ALL PRIVILEGES ON SCHEMA public TO $database_user;\""
 
 #get server public and preshared keys
 server_public_key=$(cat /etc/wireguard/publickey)

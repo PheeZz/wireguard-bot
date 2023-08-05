@@ -147,12 +147,17 @@ then
       echo "Enter peer dns server(-s):"
       echo "Just press ENTER for use default dns server [$Blue 1.1.1.1, 8.8.8.8 $White]" | sed 's/\$//g'
 
-        read peer_dns
-        if [ -z "$peer_dns" ]
+      read peer_dns
+      #if peer dns is empty then set default dns server
+      if [ -z "$peer_dns" ]
         then
               peer_dns="1.1.1.1, 8.8.8.8"
-        fi
+      fi
 fi
+
+echo "$White peer dns: $Blue $peer_dns" | sed 's/\$//g'
+#sleep 5 seconds
+sleep 500
 
 sudo apt update && sudo apt upgrade -y
 sudo apt install -y git bat

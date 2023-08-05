@@ -184,11 +184,11 @@ sudo chmod 600 /etc/wireguard/presharedkey
 
 # Enable IP forwarding
 sudo echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
-sysctl -p /etc/sysctl.conf
+sudo sysctl -p /etc/sysctl.conf
 
 #enable and start wiregiard service
-systemctl enable wg-quick@wg0.service
-systemctl start wg-quick@wg0.service
+sudo systemctl enable wg-quick@wg0.service
+sudo systemctl start wg-quick@wg0.service
 
 # Determine the correct network interface
 if ip link show eth0 &> /dev/null; then
@@ -213,7 +213,7 @@ PostDown = iptables -D FORWARD -i %i -j ACCEPT; iptables -t nat -D POSTROUTING -
 EOF
 
 # Restart WireGuard service
-systemctl restart wg-quick@wg0.service
+sudo systemctl restart wg-quick@wg0.service
 
 #configure postgres
 su - postgres -c "psql -c \"CREATE DATABASE $database_name;\""
@@ -225,8 +225,8 @@ su - postgres -c "psql -c \"GRANT ALL PRIVILEGES ON DATABASE $database_name TO $
 su - postgres -c "psql -c \"GRANT ALL PRIVILEGES ON SCHEMA public TO $database_user;\""
 
 #get server public and preshared keys
-server_public_key=$(cat /etc/wireguard/publickey)
-server_preshared_key=$(cat /etc/wireguard/presharedkey)
+server_public_key=$(sudo cat /etc/wireguard/publickey)
+server_preshared_key=$(sudo cat /etc/wireguard/presharedkey)
 
 #configure wireguard peer dns server
 if [ "$install_adguard_home" = "true" ]

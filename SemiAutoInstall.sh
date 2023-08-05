@@ -177,8 +177,8 @@ sudo apt install -y tmux mosh wireguard postgresql postgresql-contrib
 sudo systemctl start postgresql.service
 
 #create wg keys
-wg genkey | tee /etc/wireguard/privatekey | wg pubkey | tee /etc/wireguard/publickey
-wg genpsk | tee /etc/wireguard/presharedkey
+sudo wg genkey | tee /etc/wireguard/privatekey | wg pubkey | tee /etc/wireguard/publickey
+sudo wg genpsk | tee /etc/wireguard/presharedkey
 sudo chmod 600 /etc/wireguard/privatekey
 sudo chmod 600 /etc/wireguard/presharedkey
 

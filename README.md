@@ -135,7 +135,7 @@ Database: postgresql<br/>
    ```bash
    rm create.py
    ```
-8. #### Install AdGuard Home</br>
+8. #### Install AdGuard Home (optional)</br>
    Firtly make installation script executable</br>
 
    ```bash
@@ -148,35 +148,33 @@ Database: postgresql<br/>
    ./AdGuardInstall.sh
    ```
 9.  #### Configure AddGuard Home</br>
-   Open AddGuard Home web interface on url ```<your_server_ip>:3000```</br>
-   Do the initial setup, it's very simple, just follow the instructions and create admin account</br>
-   Go to Settings -> Filters -> DNS blocklists and add some blocklists (I recommend to use add all available blocklists EXCEPT `No Google` list)</br>
+      Open AddGuard Home web interface on url ```<your_server_ip>:3000```</br>
+      Do the initial setup, it's very simple, just follow the instructions and create admin account</br>
+      Go to Settings -> Filters -> DNS blocklists and add some blocklists (I recommend to use add all available blocklists EXCEPT `No Google` list)</br>
 
 10. #### Create .service file for your bot</br>
-
-   Path: `/etc/systemd/system/wireguard-bot.service` </br>
-   Code: (if you using python 3.10)</br>
-
-   ```ini
-    [Unit]
-    Description='Service for wireguard bot'
-    After=network.target
-
-    [Service]
-    Type=idle
-    Restart=on-failure
-    User=root
-    ExecStart=/bin/bash -c 'cd ~/wireguard-bot/ && $(poetry env info --path)/bin/python3.10 app.py'
-
-    [Install]
-    WantedBy=multi-user.target
-   ```
+      Path: `/etc/systemd/system/wireguard-bot.service` </br>
+      Code: (if you using python 3.10)</br>
+   
+      ```ini
+       [Unit]
+       Description='Service for wireguard bot'
+       After=network.target
+   
+       [Service]
+       Type=idle
+       Restart=on-failure
+       User=root
+       ExecStart=/bin/bash -c 'cd ~/wireguard-bot/ && $(poetry env info --path)/bin/python3.10 app.py'
+   
+       [Install]
+       WantedBy=multi-user.target
+      ```
 11. Enable service and start it</br>
-
-   ```bash
-   systemctl enable wireguard-bot.service
-   systemctl start wireguard-bot.service
-   ```
+      ```bash
+      systemctl enable wireguard-bot.service
+      systemctl start wireguard-bot.service
+      ```
 
 12. Finally, you can use your bot and enjoy it ❤️
 
@@ -196,6 +194,9 @@ Database: postgresql<br/>
    `/wgrestart` - restart wireguard service
 
 
+## TODO
+1. Rewrite subcrription checking daemon (make it parse wg0.conf file, not check by db only).
+2. Create server-to-server migration script (user configs must use domain instead of server ip)
 
 ## Support
 

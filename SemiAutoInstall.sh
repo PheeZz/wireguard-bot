@@ -181,6 +181,10 @@ sudo chmod 600 /etc/wireguard/presharedkey
 sudo echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
 sysctl -p /etc/sysctl.conf
 
+#enable and start wiregiard service
+systemctl enable wg-quick@wg0.service
+systemctl start wg-quick@wg0.service
+
 # Determine the correct network interface
 if ip link show eth0 &> /dev/null; then
     interface=eth0

@@ -5,7 +5,7 @@ Defaul_color=$'\e[0m'
 Orange=$'\e[1;33m'
 White=$'\e[1;37m'
 
-#disable firewall
+# disable firewall
 sudo ufw disable
 
 sudo apt install -y curl
@@ -151,13 +151,15 @@ then
       #if peer dns is empty then set default dns server
       if [ -z "$peer_dns" ]
         then
-              peer_dns="1.1.1.1, 8.8.8.8"
+            peer_dns="1.1.1.1, 8.8.8.8"
       fi
-fi
+else
+      #if install_adguard_home is true then set peer dns to "10.0.0.1"
+      peer_dns="10.0.0.1"
 
+fi
 echo "$White peer dns: $Blue $peer_dns" | sed 's/\$//g'
-#sleep 5 seconds
-sleep 500
+sleep 5
 
 sudo apt update && sudo apt upgrade -y
 sudo apt install -y git bat
@@ -228,14 +230,7 @@ su - postgres -c "psql -c \"GRANT ALL PRIVILEGES ON SCHEMA public TO $database_u
 server_public_key=$(sudo cat /etc/wireguard/publickey)
 server_preshared_key=$(sudo cat /etc/wireguard/presharedkey)
 
-#configure wireguard peer dns server
-if [ "$install_adguard_home" = "true" ]
-then
-    peer_dns="10.0.0.1"
-else
-    peer_dns="1.1.1.1"
-fi
-
+#configure .env file
 cd ~/wireguard-bot
 #write .env file
 cat << EOF >> data/.env

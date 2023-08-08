@@ -39,7 +39,7 @@ echo "...................made by PheeZz..........................."
 echo "............................................................"
 
 echo $White | sed 's/\$//g'
-#answer user for bot token
+
 echo "Now need to input some data for bot configuration"
 echo "You can change it later in ~/wireguard-bot/data/.env file"
 echo ""

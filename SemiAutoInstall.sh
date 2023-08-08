@@ -184,13 +184,6 @@ sudo wg genpsk | sudo tee /etc/wireguard/presharedkey
 sudo chmod 600 /etc/wireguard/privatekey
 sudo chmod 600 /etc/wireguard/presharedkey
 
-# Enable IP forwarding
-sudo echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
-sudo sysctl -p /etc/sysctl.conf
-
-#enable and start wiregiard service
-sudo systemctl enable wg-quick@wg0.service
-sudo systemctl start wg-quick@wg0.service
 
 # Determine the correct network interface
 if ip link show eth0 &> /dev/null; then
@@ -214,8 +207,13 @@ PostDown = iptables -D FORWARD -i %i -j ACCEPT; iptables -t nat -D POSTROUTING -
 
 EOF
 
-# Restart WireGuard service
-sudo systemctl restart wg-quick@wg0.service
+# Enable IP forwarding
+sudo echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
+sudo sysctl -p 
+
+#enable and start wiregiard service
+sudo systemctl enable wg-quick@wg0.service
+sudo systemctl start wg-quick@wg0.service
 
 #configure postgres
 su - postgres -c "psql -c \"CREATE DATABASE $database_name;\""

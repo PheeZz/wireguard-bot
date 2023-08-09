@@ -8,7 +8,7 @@ White=$'\e[1;37m'
 # disable firewall
 sudo ufw disable
 
-sudo apt install -y curl
+sudo apt install -y curl iptables
 #clear screen after install curl
 clear
 

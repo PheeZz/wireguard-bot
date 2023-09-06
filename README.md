@@ -19,6 +19,8 @@
 3. [Before you start...](#before-you-start)
 4. [Setup guide](#setup)
 
+## ❗️Attention: check my [new VPN bot on XRAY (xtls-reality) protocol](https://github.com/PheeZz/XTLS-Reality-bot)
+
 ## Description
 
 This bot is designed to manage Wireguard VPN server. It can automatically connect and disconnect users, generate QR codes for mobile clients, and also can be used as a payment system for VPN services.

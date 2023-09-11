@@ -14,7 +14,6 @@ class Config:
         load_dotenv(override=True)
 
         self._bot_token = self._get_bot_token()
-        self._payments_token = self._get_payments_token()
         self._admins = self._get_admins()
         self._payment_card = self._get_payment_card()
         self._configs_prefix = self._get_configs_prefix()
@@ -27,10 +26,6 @@ class Config:
     @property
     def bot_token(self) -> str:
         return self._bot_token
-
-    @property
-    def payments_token(self) -> str:
-        return self._payments_token
 
     @property
     def admins(self) -> list[int]:
@@ -61,14 +56,6 @@ class Config:
         if not bot_token:
             raise EnvVariableNotFound("WG_BOT_TOKEN")
         return bot_token
-
-    def _get_payments_token(self) -> str:
-        payments_token = os.getenv("PAYMENTS_TOKEN")
-        if not payments_token:
-            logger.warning(
-                "Payments token not found. Check .env file. (optional, because it's not used)"
-            )
-        return payments_token
 
     def _get_admins(self) -> list[int]:
         admins_str = os.getenv("ADMINS_IDS")
@@ -112,7 +99,7 @@ class Config:
         if not base_subscription_monthly_price_rubles:
             raise EnvVariableNotFound("BASE_SUBSCRIPTION_MONTHLY_PRICE_RUBLES")
         return int(base_subscription_monthly_price_rubles)
-    
+
     def _get_peer_dns(self) -> str:
         peer_dns = os.getenv("PEER_DNS")
         if not peer_dns:

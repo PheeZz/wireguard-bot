@@ -238,7 +238,6 @@ WG_SERVER_PORT = '51830'
 WG_SERVER_PUBLIC_KEY = $server_public_key
 WG_SERVER_PRESHARED_KEY= $server_preshared_key
 WG_CFG_PATH = '/etc/wireguard/wg0.conf'
-PAYMENTS_TOKEN = 'PAYMENTS_TOKEN_HERE'
 ADMINS_IDS = $admins_ids
 PAYMENT_CARD = $payment_card
 CONFIGS_PREFIX = $config_prefix

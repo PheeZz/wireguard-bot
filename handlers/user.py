@@ -113,7 +113,7 @@ async def successful_payment_handler(message: types.Message):
     database.insert_new_payment(message)
     if database.selector.is_user_have_config(message.from_user.id):
         try:
-            vpn_config.reconnect_payed_user(message.from_user.id)
+            await vpn_config.reconnect_payed_user(message.from_user.id)
         except Exception as e:
             logger.error(e)
 
@@ -173,7 +173,7 @@ async def device_selected(call: types.CallbackQuery, state=FSMContext):
     database.update_user_config_count(call.from_user.id)
 
     device = "PC" if call.data.startswith("pc") else "PHONE"
-    user_config = vpn_config.update_server_config(
+    user_config = await vpn_config.update_server_config(
         username=call.from_user.username, device=device
     )
 

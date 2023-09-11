@@ -128,7 +128,7 @@ async def give_subscription_time(
         database.update.update_given_subscription_time(user_id=user_id, days=int(days))
         is_subscription_expired = database.selector.is_subscription_expired(user_id)
         if is_subscription_expired:
-            vpn_config.disconnect_peer(user_id)
+            await vpn_config.disconnect_peer(user_id)
             await bot.send_message(
                 user_id,
                 "Ваша подписка истекла.",
@@ -138,7 +138,7 @@ async def give_subscription_time(
         await message.answer(f"Error: {e.__repr__()}")
     else:
         if not is_subscription_expired:
-            vpn_config.reconnect_payed_user(user_id=user_id)
+            await vpn_config.reconnect_payed_user(user_id=user_id)
         await bot.send_message(
             user_id,
             f"Поздравляем! Администратор продлил вашу подписку на {hbold(days)} дней!",

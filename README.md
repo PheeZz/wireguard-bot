@@ -3,8 +3,10 @@
 <img src = "https://github.com/PheeZz/wireguard-bot/blob/master/image/logo_wide.png?raw=true" width = 50%>
 </p>
 
+<div align="center">
+
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-[![Packaged with Poetry](https://img.shields.io/badge/packaging-poetry-cyan.svg)](https://python-poetry.org/)</br>
+[![Packaged with Poetry](https://img.shields.io/badge/packaging-poetry-cyan.svg)](https://python-poetry.org/)<br>
 [![!Ubuntu](https://img.shields.io/badge/Ubuntu-E95420?style=for-the-badge&logo=ubuntu&logoColor=white)](https://ubuntu.com/)
 [![!Debian](https://img.shields.io/badge/Debian-A81D33?style=for-the-badge&logo=debian&logoColor=white)](https://www.debian.org/)
 [![!Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
@@ -12,6 +14,9 @@
 [![!Wireguard](https://img.shields.io/badge/Wireguard-88171A?style=for-the-badge&logo=wireguard&logoColor=white)](https://www.wireguard.com/)
 [![!AdGuard](https://img.shields.io/badge/AdGuard-00A6D6?style=for-the-badge&logo=adguard&logoColor=white)](https://adguard.com/)
 [![!Telegram](https://img.shields.io/badge/Telegram-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white)](https://telegram.org/)
+
+</div>
+
 ## Contents tree:
 
 1. [Description](#description)

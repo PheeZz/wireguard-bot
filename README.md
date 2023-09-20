@@ -213,3 +213,7 @@ You can support me by give star to this repo or.. Donation..<br/>
 <a href = "https://www.donationalerts.com/r/pheezz"><img src = "https://upload.wikimedia.org/wikipedia/ru/thumb/a/ad/DA_Logo_Color.svg/640px-DA_Logo_Color.svg.png" width = 20%></a>
 
 #### ETH - 0x56936AE100f52F99E87767773Ccb2615f1E06ae4<br/>
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=PheeZz/wireguard-bot&type=Date)](https://star-history.com/#PheeZz/wireguard-bot&Date)

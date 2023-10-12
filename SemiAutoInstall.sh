@@ -1,3 +1,4 @@
+#color codes for terminal
 Red=$'\e[1;31m'
 Green=$'\e[1;32m'
 Blue=$'\e[1;34m'
@@ -13,13 +14,13 @@ sudo apt install -y curl iptables
 clear
 
 #get server external ip
-server_ip=$(curl -s ifconfig.me)
+server_ip=$(curl -s https://ifconfig.me)
 
 if [ -z "$server_ip" ]
 then
       echo "$Red Can't get server external ip" | sed 's/\$//g'
       echo "$Red Check your internet connection" | sed 's/\$//g'
-      echo "$Red Fail on command: curl -s ifconfig.me" | sed 's/\$//g'
+      echo "$Red Fail on command: curl -s https://ifconfig.me" | sed 's/\$//g'
       exit 1
 fi
 

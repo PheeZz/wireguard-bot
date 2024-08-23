@@ -1,5 +1,5 @@
 #/bin/bash
-curl -s -S -L https://raw.githubusercontent.com/AdguardTeam/AdGuardHome/master/scripts/install.sh | sh -s -- -v
+curl -sSL https://raw.githubusercontent.com/AdguardTeam/AdGuardHome/master/scripts/install.sh | sh -s -- -v
 cd /opt/AdGuardHome/
 ./AdGuardHome -s install
 ./AdGuardHome -s start

@@ -212,7 +212,7 @@ EOF
 
 # Enable IP forwarding
 sudo echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
-sudo sysctl -p 
+sudo sysctl -p
 
 #enable and start wiregiard service
 sudo systemctl enable wg-quick@wg0.service

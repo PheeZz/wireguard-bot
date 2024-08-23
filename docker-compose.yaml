@@ -1,0 +1,75 @@
+services:
+  db:
+    container_name: "wg_bot_database"
+    build:
+      dockerfile: ./Dockerfile.postgres
+    volumes:
+      - WG_BOT_INIT_DB:/docker-entrypoint-initdb.d
+      - WG_BOT_DB_DATA:/var/lib/postgresql/data
+    ports:
+      - 5433:5432
+    environment:
+      POSTGRES_USER: wg_bot
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: wireguard_bot_db
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U wg_bot -d wireguard_bot_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - wg_bot_network
+    restart: unless-stopped
+
+  wireguard_plus_adguard:
+    container_name: wireguard_plus_adguard
+    build:
+      dockerfile: ./Dockerfile.wireguard
+    volumes:
+      - ./wg0.conf:/etc/wireguard/wg0.conf
+    healthcheck:
+      test: ["CMD-SHELL", "wg show"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - wg_bot_network
+    restart: unless-stopped
+
+
+  telegram_wireguard_bot:
+    container_name: wireguard_bot
+    build:
+      dockerfile: ./Dockerfile.bot
+    volumes:
+      - ./logs:/app/logs
+      - ./wg0.conf:/app/wg0.conf
+    depends_on:
+      - db
+    environment:
+      DATABASE: wireguard_bot_db
+      DB_USER: wg_bot
+      DB_USER_PASSWORD: postgres
+      DB_HOST: db
+      DB_PORT: 5432
+      PEER_DNS: 10.0.0.1
+      BASE_SUBSCRIPTION_MONTHLY_PRICE_RUBLES: 100
+      CONFIGS_PREFIX: PheeZz-Wireguard
+      PAYMENT_CARD: 1111-1111-1111-1111
+      WG_SERVER_PORT: 51820
+      WG_SERVER_IP: 127.0.0.1
+      ADMIN_IDS: 433364417,
+    networks:
+      - wg_bot_network
+    restart: unless-stopped
+    command: "poetry shell && alembic upgrade head && python app.py"
+
+
+networks:
+  wg_bot_network:
+    driver: bridge
+
+volumes:
+  wg_bot_db_data:

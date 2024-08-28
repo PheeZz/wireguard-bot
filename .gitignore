@@ -166,3 +166,5 @@ tempCodeRunnerFile.py
 utils/config_test.conf
 
 .vscode*
+./wireguard/*
+./WG_BOT_INIT_DB/*

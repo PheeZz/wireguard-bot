@@ -1,7 +1,9 @@
+from datetime import datetime, timedelta
+
 import psycopg2 as pg
 from loguru import logger
+
 from data import configuration
-from datetime import datetime, timedelta
 
 
 def is_exist_user(user_id: int) -> bool:
@@ -114,11 +116,9 @@ def get_all_usernames_and_enddate() -> list | bool:
     try:
         conn = pg.connect(**configuration.db_connection_parameters)
         with conn.cursor() as cursor:
-            cursor.execute(
-                """--sql
+            cursor.execute("""--sql
                 SELECT username, subscription_end_date FROM users
-                """
-            )
+                """)
             return cursor.fetchall()
     except (Exception, pg.DatabaseError) as error:
         logger.error(f"[-] {error}")
@@ -130,11 +130,9 @@ def get_user_ids_and_enddate() -> list | bool:
     try:
         conn = pg.connect(**configuration.db_connection_parameters)
         with conn.cursor() as cursor:
-            cursor.execute(
-                """--sql
+            cursor.execute("""--sql
                 SELECT user_id, subscription_end_date FROM users
-                """
-            )
+                """)
             return cursor.fetchall()
     except (Exception, pg.DatabaseError) as error:
         logger.error(f"[-] {error}")
@@ -163,11 +161,9 @@ def get_all_user_ids() -> list[int] | bool:
     try:
         conn = pg.connect(**configuration.db_connection_parameters)
         with conn.cursor() as cursor:
-            cursor.execute(
-                """--sql
+            cursor.execute("""--sql
                 SELECT user_id FROM users
-                """
-            )
+                """)
             return cursor.fetchall()
     except (Exception, pg.DatabaseError) as error:
         logger.error(f"[-] {error}")

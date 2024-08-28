@@ -4,7 +4,7 @@ services:
     image: postgres:16.1
     volumes:
       - ./WG_BOT_INIT_DB:/docker-entrypoint-initdb.d
-      - ./WG_BOT_DB_DATA:/var/lib/postgresql/data
+      - wg_bot_db_data:/var/lib/postgresql/data
     ports:
       - 5433:5432
     environment:
@@ -23,34 +23,42 @@ services:
     restart: unless-stopped
 
 
-  wireguard_plus_adguard:
-    container_name: wireguard_plus_adguard
-    build:
-      dockerfile: ./Dockerfile.wireguard
-    volumes:
-      - ./wg0.conf:/etc/wireguard/wg0.conf
-    healthcheck:
-      test: ["CMD-SHELL", "wg show"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 10s
-    environment:
-      LANG: C.UTF-8
-    networks:
-      - wg_bot_network
-    restart: unless-stopped
+  # wireguard_plus_adguard:
+  #   container_name: wireguard_plus_adguard
+  #   build:
+  #     dockerfile: ./Dockerfile.wireguard
+  #   volumes:
+  #     - ./wg0.conf:/etc/wireguard/wg0.conf
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "wg show"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+  #     start_period: 10s
+  #   environment:
+  #     LANG: C.UTF-8
+  #   networks:
+  #     - wg_bot_network
+  #   restart: unless-stopped
 
+  adguard_home:
+    image: adguard/adguardhome
+    container_name: adguardhome
+    volumes:
+      - /opt/adguardhome/work:/opt/adguardhome/work
+      - /opt/adguardhome/conf:/opt/adguardhome/conf
+    network_mode: host
+    restart: always
 
   telegram_wireguard_bot:
     container_name: wireguard_bot
-    build:
-      dockerfile: ./Dockerfile.bot
+    build: .
     volumes:
       - ./logs:/app/logs
-      - ./wg0.conf:/app/wg0.conf
+      - ./wireguard:/etc/wireguard
     depends_on:
       - db
+      - adguard_home
     environment:
       DATABASE: wireguard_bot_db
       DB_USER: wg_bot
@@ -63,12 +71,22 @@ services:
       PAYMENT_CARD: 1111-1111-1111-1111
       WG_SERVER_PORT: 51820
       WG_SERVER_IP: 127.0.0.1
-      ADMIN_IDS: 433364417,
+      ADMINS_IDS: '433364417,'
+      WG_CFG_PATH: '/etc/wireguard/wg0.conf'
+      WG_BOT_TOKEN: '7425583847:AAHLfTb2M8wrAnGi8hofsbancb12iSAty38'
       LANG: C.UTF-8
     networks:
       - wg_bot_network
+    ports:
+      - "51820:51820/udp"
     restart: unless-stopped
-    command: "poetry shell && alembic upgrade head && python app.py"
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    sysctls:
+      - net.ipv4.ip_forward=1
+      - net.ipv4.conf.all.src_valid_mark=1
+    entrypoint: /bin/bash -c "chmod +x ./run.sh && ./run.sh"
 
 
 networks:

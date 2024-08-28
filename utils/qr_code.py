@@ -1,9 +1,9 @@
-import qrcode
-
-from qrcode.image.styledpil import StyledPilImage
-from qrcode.image.styles.moduledrawers.pil import RoundedModuleDrawer
-from qrcode.image.styles.colormasks import HorizontalGradiantColorMask
 from io import BytesIO
+
+import qrcode
+from qrcode.image.styledpil import StyledPilImage
+from qrcode.image.styles.colormasks import HorizontalGradiantColorMask
+from qrcode.image.styles.moduledrawers.pil import RoundedModuleDrawer
 
 
 def create_qr_code_from_peer_data(peer_data: str) -> BytesIO:

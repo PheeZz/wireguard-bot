@@ -1,19 +1,17 @@
-from loguru import logger
-from os import remove
 from io import BytesIO
+from os import remove
+
 from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.utils.markdown import hcode, hlink
-
-from middlewares import rate_limit
-import keyboards as kb
+from loguru import logger
 
 import database
-from loader import bot
+import keyboards as kb
 from data import configuration
-from loader import vpn_config
 from database import selector
-
+from loader import bot, vpn_config
+from middlewares import rate_limit
 from utils.fsm import NewConfig, NewPayment
 from utils.qr_code import create_qr_code_from_peer_data
 
@@ -22,33 +20,39 @@ from utils.qr_code import create_qr_code_from_peer_data
 async def cmd_start(message: types.Message) -> types.Message:
     if not message.from_user.username:
         await message.answer(
-            f"Привет, {message.from_user.full_name}!\nУ тебя не установлен username, установи его в настройках телеграма и напиши /start\n"
-            f"Если не знаешь как это сделать - посмотри {hlink('справку', 'https://silverweb.by/kak-sozdat-nik-v-telegramm/')}",
+            f"Привет, {message.from_user.full_name}!\nУ тебя не установлен username, установи его в"
+            " настройках телеграма и напиши /start\nЕсли не знаешь как это сделать - посмотри"
+            f" {hlink('справку', 'https://silverweb.by/kak-sozdat-nik-v-telegramm/')}",
             parse_mode=types.ParseMode.HTML,
         )
         return
     if database.selector.is_exist_user(message.from_user.id):
         if database.selector.is_subscription_end(message.from_user.id):
             await message.answer(
-                f"Привет, {message.from_user.full_name or message.from_user.username}, твоя подписка закончилась, оплати её, чтобы продолжить пользоваться VPN",
+                f"Привет, {message.from_user.full_name or message.from_user.username}, твоя"
+                " подписка закончилась, оплати её, чтобы продолжить пользоваться VPN",
                 reply_markup=await kb.free_user_kb(message.from_user.id),
             )
         else:
             await message.answer(
-                f"Привет, {message.from_user.full_name or message.from_user.username}, твоя подписка действительна до {database.selector.get_subscription_end_date(message.from_user.id)}",
+                f"Привет, {message.from_user.full_name or message.from_user.username}, твоя"
+                " подписка действительна до"
+                f" {database.selector.get_subscription_end_date(message.from_user.id)}",
                 reply_markup=await kb.payed_user_kb(),
             )
         return
 
     await message.reply(
-        f"Привет, {message.from_user.full_name or message.from_user.username}!\nЧтобы начать пользоваться VPN, оплати подписку",
+        f"Привет, {message.from_user.full_name or message.from_user.username}!\nЧтобы начать"
+        " пользоваться VPN, оплати подписку",
         reply_markup=await kb.free_user_kb(message.from_user.id),
     )
     await bot.send_message(
         message.from_user.id,
-        "Подробное описание бота и его функционала доступно на "
-        f"{hlink('странице','https://telegra.ph/FAQ-po-botu-01-08')}, "
-        "оплачивая подписку, вы соглашаетесь с правилами использования бота и условиями возврата средств, указанными в статье выше.",
+        "Подробное описание бота и его функционала доступно на"
+        f" {hlink('странице','https://telegra.ph/FAQ-po-botu-01-08')}, оплачивая подписку, вы"
+        " соглашаетесь с правилами использования бота и условиями возврата средств, указанными в"
+        " статье выше.",
         parse_mode=types.ParseMode.HTML,
     )
     database.insert_new_user(message)
@@ -70,9 +74,10 @@ async def cmd_pay(message: types.Message, state: FSMContext) -> types.Message:
     await NewPayment.payment_image.set()
     await bot.send_message(
         message.from_user.id,
-        "В данный момент нет возможности совершить платеж в боте."
-        f"Для оплаты подписки переведите {configuration.base_subscription_monthly_price_rubles}₽ на карту {hcode(configuration.payment_card)} "
-        "и отправьте скриншот чека/операции в ответ на это сообщение.",
+        "В данный момент нет возможности совершить платеж в боте.Для оплаты подписки переведите"
+        f" {configuration.base_subscription_monthly_price_rubles}₽ на карту"
+        f" {hcode(configuration.payment_card)} и отправьте скриншот чека/операции в ответ на это"
+        " сообщение.",
         parse_mode=types.ParseMode.HTML,
         reply_markup=await kb.cancel_payment_kb(),
     )
@@ -94,10 +99,9 @@ async def got_payment_screenshot(message: types.Message, state: FSMContext):
         give_help_command = f"/give {message.from_user.id} 30"
         await bot.send_message(
             admin,
-            f"Пользователь {message.from_user.full_name}\n"
-            f"id: {hcode(message.from_user.id)}, username: {hcode(message.from_user.username)} оплатил подписку на VPN.\n\n"
-            "Проверьте оплату и активируйте VPN для пользователя.\n"
-            f"{hcode(give_help_command)}",
+            f"Пользователь {message.from_user.full_name}\nid: {hcode(message.from_user.id)},"
+            f" username: {hcode(message.from_user.username)} оплатил подписку на VPN.\n\nПроверьте"
+            f" оплату и активируйте VPN для пользователя.\n{hcode(give_help_command)}",
             parse_mode=types.ParseMode.HTML,
         )
 
@@ -118,7 +122,8 @@ async def successful_payment_handler(message: types.Message):
             logger.error(e)
 
     await message.answer(
-        f"{message.from_user.full_name or message.from_user.username}, твой доступ к VPN продлен до {database.selector.get_subscription_end_date(message.from_user.id)}",
+        f"{message.from_user.full_name or message.from_user.username}, твой доступ к VPN продлен до"
+        f" {database.selector.get_subscription_end_date(message.from_user.id)}",
         reply_markup=await kb.payed_user_kb(),
     )
 
@@ -222,9 +227,7 @@ async def cmd_show_config(message: types.Message, state=FSMContext):
         user_id=message.from_user.id,
         config_name=f"{message.from_user.username}_{device}",
     )
-    filename = (
-        f"{configuration.configs_prefix}_{message.from_user.username}_{device}.conf"
-    )
+    filename = f"{configuration.configs_prefix}_{message.from_user.username}_{device}.conf"
     io_config_file = BytesIO(config.encode("utf-8"))
 
     if device == "PC":
@@ -239,9 +242,7 @@ async def cmd_show_config(message: types.Message, state=FSMContext):
     if device == "PHONE":
         # firstly create qr code image, then send it with config file
         # this method is used for restrict delay between sending file and photo
-        image_filename = (
-            f"{configuration.configs_prefix}_{message.from_user.username}.png"
-        )
+        image_filename = f"{configuration.configs_prefix}_{message.from_user.username}.png"
         config_qr_code = create_qr_code_from_peer_data(config)
 
         await message.answer_document(
@@ -263,14 +264,16 @@ async def cmd_show_config(message: types.Message, state=FSMContext):
 async def cmd_support(message: types.Message):
     # send telegraph page with support info (link: https://telegra.ph/FAQ-po-botu-01-08)
     await message.answer(
-        f"Подробное описание бота и его функционала доступно на {hlink('странице','https://telegra.ph/FAQ-po-botu-01-08')}",
+        "Подробное описание бота и его функционала доступно на"
+        f" {hlink('странице','https://telegra.ph/FAQ-po-botu-01-08')}",
         parse_mode=types.ParseMode.HTML,
     )
 
     admin_username = selector.get_username_by_id(configuration.admins[0])
     admin_telegram_link = f"t.me/{admin_username}"
     await message.answer(
-        f"Если у тебя все еще остались вопросы, то ты можешь написать {hlink('мне',admin_telegram_link)} лично",
+        "Если у тебя все еще остались вопросы, то ты можешь написать"
+        f" {hlink('мне',admin_telegram_link)} лично",
         parse_mode=types.ParseMode.HTML,
     )
 
@@ -279,8 +282,8 @@ async def cmd_support(message: types.Message):
 async def cmd_show_end_time(message: types.Message):
     # show user end time
     await message.answer(
-        f"{message.from_user.full_name or message.from_user.username}, "
-        f"твой доступ к VPN закончится {database.selector.get_subscription_end_date(message.from_user.id)}"
+        f"{message.from_user.full_name or message.from_user.username}, твой доступ к VPN закончится"
+        f" {database.selector.get_subscription_end_date(message.from_user.id)}"
     )
 
 

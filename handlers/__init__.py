@@ -1,10 +1,11 @@
-from .user import *
-from .admin import *
+from aiogram import Dispatcher
 from aiogram.types import ContentType
 
 # DON'T TOUCH THIS IMPORT
 from loader import dp
-from aiogram import Dispatcher
+
+from .admin import *
+from .user import *
 
 
 def setup(dp: Dispatcher):
@@ -17,9 +18,7 @@ def setup(dp: Dispatcher):
     """user handlers"""
     dp.register_message_handler(cmd_start, commands=["start"], state=None)
 
-    dp.register_message_handler(
-        cmd_pay, lambda message: message.text.startswith("💵"), state=None
-    )
+    dp.register_message_handler(cmd_pay, lambda message: message.text.startswith("💵"), state=None)
 
     dp.register_message_handler(
         successful_payment_handler, content_types=ContentType.SUCCESSFUL_PAYMENT
@@ -86,6 +85,4 @@ def setup(dp: Dispatcher):
 
     dp.register_message_handler(give_subscription_time, commands=["give"], state=None)
 
-    dp.register_message_handler(
-        restart_wg_service_admin, commands=["wgrestart"], state=None
-    )
+    dp.register_message_handler(restart_wg_service_admin, commands=["wgrestart"], state=None)

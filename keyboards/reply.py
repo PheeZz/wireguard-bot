@@ -1,5 +1,6 @@
-from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
-from database.selector import is_user_have_config, all_user_configs
+from aiogram.types import KeyboardButton, ReplyKeyboardMarkup
+
+from database.selector import all_user_configs, is_user_have_config
 
 
 async def payed_user_kb():
@@ -30,9 +31,7 @@ async def configs_kb(user_id: int):
     if configs:
         for config in configs:
             configs_kb.insert(
-                KeyboardButton(
-                    f"🔐 {'ПК' if config[0].split('_')[-1] == 'PC' else 'Смартфон'}"
-                )
+                KeyboardButton(f"🔐 {'ПК' if config[0].split('_')[-1] == 'PC' else 'Смартфон'}")
             )
 
     if not configs or len(configs) < 2:

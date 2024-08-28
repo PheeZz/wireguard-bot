@@ -49,9 +49,7 @@ class ThrottlingMiddleware(BaseMiddleware):
         # If handler was configured, get rate limit and key from handler
         if handler:
             limit = getattr(handler, "throttling_rate_limit", self.rate_limit)
-            key = getattr(
-                handler, "throttling_key", f"{self.prefix}_{handler.__name__}"
-            )
+            key = getattr(handler, "throttling_key", f"{self.prefix}_{handler.__name__}")
         else:
             limit = self.rate_limit
             key = f"{self.prefix}_message"
@@ -76,9 +74,7 @@ class ThrottlingMiddleware(BaseMiddleware):
         handler = current_handler.get()
         dispatcher = Dispatcher.get_current()
         if handler:
-            key = getattr(
-                handler, "throttling_key", f"{self.prefix}_{handler.__name__}"
-            )
+            key = getattr(handler, "throttling_key", f"{self.prefix}_{handler.__name__}")
         else:
             key = f"{self.prefix}_message"
 

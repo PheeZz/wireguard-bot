@@ -12,10 +12,12 @@ async def set_commands(dp):
 
 
 async def on_startup(dp):
+    import time
+
+    from loguru import logger
+
     import handlers
     import middlewares
-    from loguru import logger
-    import time
     from utils.watchdog import Watchdog
 
     middlewares.setup(dp)
@@ -29,14 +31,15 @@ async def on_startup(dp):
         compression="zip",
     )
 
-    daemon = Watchdog()
-    daemon.run()
+    # daemon = Watchdog()
+    # daemon.run()
     logger.success("[+] Bot started successfully")
 
 
 if __name__ == "__main__":
     # Launch
     from aiogram import executor
+
     from handlers import dp
 
     executor.start_polling(dp, skip_updates=True, on_startup=on_startup)

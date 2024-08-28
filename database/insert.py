@@ -1,8 +1,10 @@
-import psycopg2 as pg
-from loguru import logger
-from data import configuration
-from aiogram.types import Message
 from datetime import datetime
+
+import psycopg2 as pg
+from aiogram.types import Message
+from loguru import logger
+
+from data import configuration
 
 
 def insert_new_user(message: Message) -> None:

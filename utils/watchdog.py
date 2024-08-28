@@ -4,12 +4,12 @@
 # third time : end date
 # fourth time : 1 day after end date send kb free user
 
-from loguru import logger
-from database.selector import get_user_ids_enddate_n_days
-import keyboards as kb
-from loader import bot
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
-from loader import vpn_config
+from loguru import logger
+
+import keyboards as kb
+from database.selector import get_user_ids_enddate_n_days
+from loader import bot, vpn_config
 
 
 class Watchdog:
@@ -42,9 +42,7 @@ class Watchdog:
                     else:
                         await bot.send_message(user_id, message_text)
                     notified_users.append(user_id)
-                    logger.warning(
-                        f"[+] user {user_id} notified about end date {days} days"
-                    )
+                    logger.warning(f"[+] user {user_id} notified about end date {days} days")
 
         logger.info("Finished checking for users with end date")
 

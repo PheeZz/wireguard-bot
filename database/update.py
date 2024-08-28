@@ -1,7 +1,9 @@
+from datetime import datetime, timedelta
+
 import psycopg2 as pg
 from loguru import logger
+
 from data import configuration
-from datetime import datetime, timedelta
 
 
 def update_user_payment(user_id: int) -> None:
@@ -40,9 +42,7 @@ def update_user_payment(user_id: int) -> None:
             )
             username = cursor.fetchone()[0]
 
-            logger.info(
-                f"[+] user {user_id}::{username} payment updated; added: 30 days"
-            )
+            logger.info(f"[+] user {user_id}::{username} payment updated; added: 30 days")
     except (Exception, pg.DatabaseError) as error:
         logger.error(f"[-] {error}")
         return None
@@ -134,10 +134,8 @@ def set_user_enddate_to_n(user_id: int, days: int) -> None:
             )
             username = cursor.fetchone()[0]
 
-            logger.info(
-                f"""[+] user {user_id}::{username} payment updated [BY ADMIN]; set to:
-                {datetime.now() + timedelta(days=days)}"""
-            )
+            logger.info(f"""[+] user {user_id}::{username} payment updated [BY ADMIN]; set to:
+                {datetime.now() + timedelta(days=days)}""")
     except (Exception, pg.DatabaseError) as error:
         logger.error(f"[-] {error}")
         return None

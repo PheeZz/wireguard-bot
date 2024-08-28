@@ -1,5 +1,6 @@
-from .Throttling import *
 from loader import dp
+
+from .Throttling import *
 
 
 def setup(dp: Dispatcher):

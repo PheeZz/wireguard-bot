@@ -1,18 +1,18 @@
+from datetime import datetime
+from io import BytesIO
+from pprint import pformat
+
 from aiogram import types
 from aiogram.dispatcher import FSMContext
-from loader import bot, vpn_config
+from aiogram.utils.markdown import hbold, hcode, hpre
 from loguru import logger
 
-from data import configuration
 import database
 import keyboards as kb
-from middlewares import rate_limit
-
-from pprint import pformat
-from datetime import datetime
-from aiogram.utils.markdown import hcode, hbold, hpre
-from io import BytesIO
+from data import configuration
 from database import selector
+from loader import bot, vpn_config
+from middlewares import rate_limit
 
 
 def is_admin(func):
@@ -30,11 +30,9 @@ def is_admin(func):
                 )
                 return
 
-            usernames_references = "".join(
-                [f"@{username} " for username in admins_usernames]
-            )
+            usernames_references = "".join([f"@{username} " for username in admins_usernames])
             await message.answer(
-                f"You don't have permission to use this command.\n"
+                "You don't have permission to use this command.\n"
                 f"Please, contact with admins: {usernames_references}",
                 parse_mode=types.ParseMode.HTML,
             )
@@ -46,9 +44,7 @@ def is_admin(func):
 @is_admin
 # function for getting info about message in pretty format
 async def cmd_info(message: types.Message, state: FSMContext) -> types.Message | str:
-    await message.answer(
-        f"{hpre(pformat(message.to_python()))}", parse_mode=types.ParseMode.HTML
-    )
+    await message.answer(f"{hpre(pformat(message.to_python()))}", parse_mode=types.ParseMode.HTML)
 
 
 @rate_limit(limit=3)
@@ -74,9 +70,7 @@ async def statistic_endtime(message: types.Message, state: FSMContext):
         )
         return
 
-    pretty_string = "".join(
-        [f'{user[0]} - {user[1].strftime("%d-%m-%Y")}\n' for user in users]
-    )
+    pretty_string = "".join([f'{user[0]} - {user[1].strftime("%d-%m-%Y")}\n' for user in users])
 
     if len(pretty_string) > 4096:
         io_string = BytesIO(pretty_string.encode("utf-8"))
@@ -104,14 +98,12 @@ def filter_users_by_status(users: list, status: str) -> list:
 
 @rate_limit(limit=3)
 @is_admin
-async def give_subscription_time(
-    message: types.Message, state: FSMContext
-) -> types.Message:
+async def give_subscription_time(message: types.Message, state: FSMContext) -> types.Message:
     # /give pheezz 30
     # or /give 123456789 30
     if len(message.text.split()) != 3:
         message.answer(
-            f"Неверный формат команды\n"
+            "Неверный формат команды\n"
             f"{hcode('/give username days')}\n"
             f"{hcode('/give user_id days')}"
         )
@@ -142,16 +134,21 @@ async def give_subscription_time(
         await bot.send_message(
             user_id,
             f"Поздравляем! Администратор продлил вашу подписку на {hbold(days)} дней!",
-            reply_markup=await kb.payed_user_kb()
-            if not is_subscription_expired
-            else await kb.free_user_kb(user_id=user_id),
+            reply_markup=(
+                await kb.payed_user_kb()
+                if not is_subscription_expired
+                else await kb.free_user_kb(user_id=user_id)
+            ),
             parse_mode=types.ParseMode.HTML,
         )
         for admin in configuration.admins:
             await bot.send_message(
                 chat_id=admin,
-                text=f"Пользователю {hcode(user_id)} продлена подписка на {hbold(days)} дней.\n"
-                f"Теперь она актуальна до: {hbold(database.selector.get_subscription_end_date(user_id))}",
+                text=(
+                    f"Пользователю {hcode(user_id)} продлена подписка на"
+                    f" {hbold(days)} дней.\nТеперь она актуальна до:"
+                    f" {hbold(database.selector.get_subscription_end_date(user_id))}"
+                ),
                 parse_mode=types.ParseMode.HTML,
             )
 

@@ -1,8 +1,0 @@
-FROM postgres:16.1
-
-# Set environment variables
-ENV LANG C.UTF-8
-
-
-# Expose port 5432
-EXPOSE 5432

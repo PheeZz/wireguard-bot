@@ -201,10 +201,6 @@ Database: postgresql<br/>
    `/wgrestart` - restart wireguard service
 
 
-## TODO
-1. Rewrite subcrription checking daemon (make it parse wg0.conf file, not check by db only).
-2. Create server-to-server migration script (user configs must use domain instead of server ip)
-
 
 ## Star History
 

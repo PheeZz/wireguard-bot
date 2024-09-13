@@ -24,7 +24,7 @@
 3. [Before you start...](#before-you-start)
 4. [Setup guide](#setup)
 
-## ❗️Attention: project unmaintained
+## ❗️Attention: project unmaintained. Please do not use it to bypass your country blocks.
 
 ## Description
 

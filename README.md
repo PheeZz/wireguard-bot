@@ -24,7 +24,7 @@
 3. [Before you start...](#before-you-start)
 4. [Setup guide](#setup)
 
-## ❗️Attention: check my [new VPN bot on XRAY (xtls-reality) protocol](https://github.com/PheeZz/XTLS-Reality-bot)
+## ❗️Attention: project unmaintained
 
 ## Description
 

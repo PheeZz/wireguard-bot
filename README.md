@@ -205,14 +205,6 @@ Database: postgresql<br/>
 1. Rewrite subcrription checking daemon (make it parse wg0.conf file, not check by db only).
 2. Create server-to-server migration script (user configs must use domain instead of server ip)
 
-## Support
-
-You can support me by give star to this repo or.. Donation..<br/>
-
-
-<a href = "https://www.donationalerts.com/r/pheezz"><img src = "https://upload.wikimedia.org/wikipedia/ru/thumb/a/ad/DA_Logo_Color.svg/640px-DA_Logo_Color.svg.png" width = 20%></a>
-
-#### ETH - 0x56936AE100f52F99E87767773Ccb2615f1E06ae4<br/>
 
 ## Star History
 
